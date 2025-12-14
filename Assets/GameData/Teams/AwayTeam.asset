@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdcf45c59bf4c8a4e8283e6feba0ae9a, type: 3}
+  m_Name: AwayTeam
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  teamName: Red Wings
+  abbreviation: RED
+  primaryColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+  secondaryColor: {r: 1, g: 1, b: 1, a: 1}
+  goalieColor: {r: 0.8, g: 0.1, b: 0.1, a: 1}
+  skatersOnIce: 5
+  goalies: 1
+  skaterStats: {fileID: 11400000, guid: 8b119356bdadbbd47a70aa3e352abf3a, type: 2}
+  goalieStats: {fileID: 11400000, guid: 01145e1640249c9488b650dbc590268a, type: 2}
+  defaultFormation: 1
+  aggressiveness: 0.6
+  aiDifficulty: 0.6
+  skaterPrefab: {fileID: 654898850013013373, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+  goaliePrefab: {fileID: 6784048840110297999, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}

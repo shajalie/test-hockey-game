@@ -1,0 +1,395 @@
+using UnityEngine;
+
+/// <summary>
+/// Procedurally generates a hockey rink with proper physics setup.
+/// </summary>
+public class RinkBuilder : MonoBehaviour
+{
+    [Header("Rink Dimensions")]
+    [SerializeField] private float length = 60f; // NHL standard ~60m
+    [SerializeField] private float width = 30f;  // NHL standard ~30m
+    [SerializeField] private float wallHeight = 1.2f;
+    [SerializeField] private float wallThickness = 0.3f;
+    [SerializeField] private float cornerRadius = 8f;
+    [SerializeField] private int cornerSegments = 8;
+
+    [Header("Goal Dimensions")]
+    [SerializeField] private float goalWidth = 1.8f;
+    [SerializeField] private float goalHeight = 1.2f;
+    [SerializeField] private float goalDepth = 1f;
+
+    [Header("Physics Materials")]
+    [SerializeField] private PhysicsMaterial iceMaterial;
+    [SerializeField] private PhysicsMaterial boardsMaterial;
+
+    [Header("Visual Materials")]
+    [SerializeField] private Material iceVisualMaterial;
+    [SerializeField] private Material boardsVisualMaterial;
+    [SerializeField] private Material goalVisualMaterial;
+
+    [Header("References (Auto-Generated)")]
+    [SerializeField] private GameObject rinkRoot;
+    [SerializeField] private Goal homeGoal;
+    [SerializeField] private Goal awayGoal;
+
+    // Properties
+    public float Length => length;
+    public float Width => width;
+    public Goal HomeGoal => homeGoal;
+    public Goal AwayGoal => awayGoal;
+    public Vector3 CenterIce => Vector3.zero;
+    public Vector3 HomeGoalPosition => new Vector3(-length / 2f + goalDepth, 0, 0);
+    public Vector3 AwayGoalPosition => new Vector3(length / 2f - goalDepth, 0, 0);
+
+    [ContextMenu("Build Rink")]
+    public void BuildRink()
+    {
+        // Clear existing
+        if (rinkRoot != null)
+        {
+            DestroyImmediate(rinkRoot);
+        }
+
+        rinkRoot = new GameObject("Rink");
+        rinkRoot.transform.SetParent(transform);
+        rinkRoot.transform.localPosition = Vector3.zero;
+
+        // Create physics materials if not assigned
+        CreateDefaultPhysicsMaterials();
+
+        // Build components
+        CreateIceSurface();
+        CreateBoards();
+        CreateGoals();
+        CreateSpawnPoints();
+
+        Debug.Log("[RinkBuilder] Rink built successfully!");
+    }
+
+    private void CreateDefaultPhysicsMaterials()
+    {
+        // Create ice material (low friction)
+        if (iceMaterial == null)
+        {
+            iceMaterial = new PhysicsMaterial("Ice");
+            iceMaterial.dynamicFriction = 0.02f;
+            iceMaterial.staticFriction = 0.02f;
+            iceMaterial.bounciness = 0.1f;
+            iceMaterial.frictionCombine = PhysicsMaterialCombine.Minimum;
+            iceMaterial.bounceCombine = PhysicsMaterialCombine.Average;
+        }
+
+        // Create boards material (bouncy)
+        if (boardsMaterial == null)
+        {
+            boardsMaterial = new PhysicsMaterial("Boards");
+            boardsMaterial.dynamicFriction = 0.4f;
+            boardsMaterial.staticFriction = 0.4f;
+            boardsMaterial.bounciness = 0.6f;
+            boardsMaterial.frictionCombine = PhysicsMaterialCombine.Average;
+            boardsMaterial.bounceCombine = PhysicsMaterialCombine.Maximum;
+        }
+    }
+
+    private void CreateIceSurface()
+    {
+        GameObject ice = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        ice.name = "IceSurface";
+        ice.transform.SetParent(rinkRoot.transform);
+        ice.transform.localPosition = new Vector3(0, -0.05f, 0);
+        ice.transform.localScale = new Vector3(length, 0.1f, width);
+
+        // Apply physics material
+        var collider = ice.GetComponent<BoxCollider>();
+        collider.material = iceMaterial;
+
+        // Apply visual material
+        var renderer = ice.GetComponent<MeshRenderer>();
+        if (iceVisualMaterial != null)
+        {
+            renderer.sharedMaterial = iceVisualMaterial;
+        }
+        else
+        {
+            // Default ice color - create a new material to avoid modifying shared default
+            Material iceMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            iceMat.color = new Color(0.9f, 0.95f, 1f);
+            renderer.sharedMaterial = iceMat;
+        }
+
+        ice.layer = LayerMask.NameToLayer("Ground");
+    }
+
+    private void CreateBoards()
+    {
+        GameObject boards = new GameObject("Boards");
+        boards.transform.SetParent(rinkRoot.transform);
+
+        float halfLength = length / 2f - cornerRadius;
+        float halfWidth = width / 2f - cornerRadius;
+
+        // Long sides (along X axis)
+        CreateWall(boards.transform, new Vector3(0, wallHeight / 2f, width / 2f),
+                   new Vector3(length - cornerRadius * 2f, wallHeight, wallThickness), "NorthWall");
+        CreateWall(boards.transform, new Vector3(0, wallHeight / 2f, -width / 2f),
+                   new Vector3(length - cornerRadius * 2f, wallHeight, wallThickness), "SouthWall");
+
+        // Short sides (along Z axis) - with gap for goals
+        float sideWallLength = (width - cornerRadius * 2f - goalWidth) / 2f;
+
+        // Home end (left, -X)
+        CreateWall(boards.transform, new Vector3(-length / 2f, wallHeight / 2f, width / 4f + goalWidth / 4f),
+                   new Vector3(wallThickness, wallHeight, sideWallLength), "HomeWallTop");
+        CreateWall(boards.transform, new Vector3(-length / 2f, wallHeight / 2f, -width / 4f - goalWidth / 4f),
+                   new Vector3(wallThickness, wallHeight, sideWallLength), "HomeWallBottom");
+
+        // Away end (right, +X)
+        CreateWall(boards.transform, new Vector3(length / 2f, wallHeight / 2f, width / 4f + goalWidth / 4f),
+                   new Vector3(wallThickness, wallHeight, sideWallLength), "AwayWallTop");
+        CreateWall(boards.transform, new Vector3(length / 2f, wallHeight / 2f, -width / 4f - goalWidth / 4f),
+                   new Vector3(wallThickness, wallHeight, sideWallLength), "AwayWallBottom");
+
+        // Corners
+        CreateCorner(boards.transform, new Vector3(halfLength, 0, halfWidth), 0, "CornerNE");
+        CreateCorner(boards.transform, new Vector3(-halfLength, 0, halfWidth), 90, "CornerNW");
+        CreateCorner(boards.transform, new Vector3(-halfLength, 0, -halfWidth), 180, "CornerSW");
+        CreateCorner(boards.transform, new Vector3(halfLength, 0, -halfWidth), 270, "CornerSE");
+    }
+
+    private void CreateWall(Transform parent, Vector3 position, Vector3 size, string name)
+    {
+        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        wall.name = name;
+        wall.transform.SetParent(parent);
+        wall.transform.localPosition = position;
+        wall.transform.localScale = size;
+
+        var collider = wall.GetComponent<BoxCollider>();
+        collider.material = boardsMaterial;
+
+        var renderer = wall.GetComponent<MeshRenderer>();
+        if (boardsVisualMaterial != null)
+        {
+            renderer.sharedMaterial = boardsVisualMaterial;
+        }
+        else
+        {
+            // Create shared wall material once
+            if (_wallMaterial == null)
+            {
+                _wallMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                _wallMaterial.color = new Color(0.2f, 0.2f, 0.3f);
+            }
+            renderer.sharedMaterial = _wallMaterial;
+        }
+
+        wall.layer = LayerMask.NameToLayer("Wall");
+        wall.tag = "Wall";
+    }
+
+    // Cached materials for edit mode
+    private static Material _wallMaterial;
+    private static Material _goalMaterial;
+
+    private void CreateCorner(Transform parent, Vector3 centerPosition, float startAngle, string name)
+    {
+        GameObject corner = new GameObject(name);
+        corner.transform.SetParent(parent);
+        corner.transform.localPosition = centerPosition;
+
+        for (int i = 0; i < cornerSegments; i++)
+        {
+            float angle1 = (startAngle + (90f / cornerSegments) * i) * Mathf.Deg2Rad;
+            float angle2 = (startAngle + (90f / cornerSegments) * (i + 1)) * Mathf.Deg2Rad;
+
+            Vector3 p1 = new Vector3(Mathf.Cos(angle1), 0, Mathf.Sin(angle1)) * cornerRadius;
+            Vector3 p2 = new Vector3(Mathf.Cos(angle2), 0, Mathf.Sin(angle2)) * cornerRadius;
+            Vector3 mid = (p1 + p2) / 2f;
+
+            float segmentLength = Vector3.Distance(p1, p2);
+            float segmentAngle = Mathf.Atan2(p2.z - p1.z, p2.x - p1.x) * Mathf.Rad2Deg;
+
+            GameObject segment = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            segment.name = $"Segment_{i}";
+            segment.transform.SetParent(corner.transform);
+            segment.transform.localPosition = mid + Vector3.up * wallHeight / 2f;
+            segment.transform.localRotation = Quaternion.Euler(0, -segmentAngle + 90, 0);
+            segment.transform.localScale = new Vector3(wallThickness, wallHeight, segmentLength + 0.1f);
+
+            var collider = segment.GetComponent<BoxCollider>();
+            collider.material = boardsMaterial;
+
+            var renderer = segment.GetComponent<MeshRenderer>();
+            if (boardsVisualMaterial != null)
+            {
+                renderer.sharedMaterial = boardsVisualMaterial;
+            }
+            else
+            {
+                if (_wallMaterial == null)
+                {
+                    _wallMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                    _wallMaterial.color = new Color(0.2f, 0.2f, 0.3f);
+                }
+                renderer.sharedMaterial = _wallMaterial;
+            }
+
+            segment.layer = LayerMask.NameToLayer("Wall");
+            segment.tag = "Wall";
+        }
+    }
+
+    private void CreateGoals()
+    {
+        // Home goal (Team 0 defends, Team 1 scores here)
+        GameObject homeGoalObj = CreateGoalStructure("HomeGoal", HomeGoalPosition, Quaternion.Euler(0, 90, 0));
+        homeGoal = homeGoalObj.GetComponentInChildren<Goal>();
+        if (homeGoal != null)
+        {
+            // Home goal = Team 0's goal, so when puck enters, Team 1 (index 1) would score
+            // But based on our Goal.cs logic, teamIndex is who OWNS the goal
+            // So Team 0 owns home goal, Team 1 scores when puck enters
+        }
+
+        // Away goal (Team 1 defends, Team 0 scores here)
+        GameObject awayGoalObj = CreateGoalStructure("AwayGoal", AwayGoalPosition, Quaternion.Euler(0, -90, 0));
+        awayGoal = awayGoalObj.GetComponentInChildren<Goal>();
+    }
+
+    private GameObject CreateGoalStructure(string name, Vector3 position, Quaternion rotation)
+    {
+        GameObject goal = new GameObject(name);
+        goal.transform.SetParent(rinkRoot.transform);
+        goal.transform.localPosition = position;
+        goal.transform.localRotation = rotation;
+
+        // Goal frame (visual)
+        GameObject frame = new GameObject("Frame");
+        frame.transform.SetParent(goal.transform);
+
+        // Crossbar
+        GameObject crossbar = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        crossbar.name = "Crossbar";
+        crossbar.transform.SetParent(frame.transform);
+        crossbar.transform.localPosition = new Vector3(0, goalHeight, 0);
+        crossbar.transform.localRotation = Quaternion.Euler(0, 0, 90);
+        crossbar.transform.localScale = new Vector3(0.05f, goalWidth / 2f, 0.05f);
+        ApplyGoalMaterial(crossbar);
+
+        // Posts
+        GameObject leftPost = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        leftPost.name = "LeftPost";
+        leftPost.transform.SetParent(frame.transform);
+        leftPost.transform.localPosition = new Vector3(0, goalHeight / 2f, goalWidth / 2f);
+        leftPost.transform.localScale = new Vector3(0.05f, goalHeight / 2f, 0.05f);
+        ApplyGoalMaterial(leftPost);
+
+        GameObject rightPost = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        rightPost.name = "RightPost";
+        rightPost.transform.SetParent(frame.transform);
+        rightPost.transform.localPosition = new Vector3(0, goalHeight / 2f, -goalWidth / 2f);
+        rightPost.transform.localScale = new Vector3(0.05f, goalHeight / 2f, 0.05f);
+        ApplyGoalMaterial(rightPost);
+
+        // Goal trigger zone
+        GameObject trigger = new GameObject("GoalTrigger");
+        trigger.transform.SetParent(goal.transform);
+        trigger.transform.localPosition = new Vector3(goalDepth / 2f, goalHeight / 2f, 0);
+
+        BoxCollider triggerCollider = trigger.AddComponent<BoxCollider>();
+        triggerCollider.isTrigger = true;
+        triggerCollider.size = new Vector3(goalDepth, goalHeight, goalWidth);
+
+        Goal goalComponent = trigger.AddComponent<Goal>();
+        trigger.tag = "Goal";
+
+        return goal;
+    }
+
+    private void ApplyGoalMaterial(GameObject obj)
+    {
+        var renderer = obj.GetComponent<MeshRenderer>();
+        if (goalVisualMaterial != null)
+        {
+            renderer.sharedMaterial = goalVisualMaterial;
+        }
+        else
+        {
+            if (_goalMaterial == null)
+            {
+                _goalMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                _goalMaterial.color = Color.red;
+            }
+            renderer.sharedMaterial = _goalMaterial;
+        }
+    }
+
+    private void CreateSpawnPoints()
+    {
+        GameObject spawns = new GameObject("SpawnPoints");
+        spawns.transform.SetParent(rinkRoot.transform);
+
+        // Center ice faceoff
+        CreateSpawnPoint(spawns.transform, "CenterFaceoff", Vector3.zero);
+
+        // Player spawn (home side)
+        CreateSpawnPoint(spawns.transform, "PlayerSpawn", new Vector3(-length / 4f, 0, 0));
+
+        // AI spawn (away side)
+        CreateSpawnPoint(spawns.transform, "AISpawn", new Vector3(length / 4f, 0, 0));
+
+        // Puck spawn
+        CreateSpawnPoint(spawns.transform, "PuckSpawn", new Vector3(0, 0.1f, 0));
+    }
+
+    private void CreateSpawnPoint(Transform parent, string name, Vector3 position)
+    {
+        GameObject spawn = new GameObject(name);
+        spawn.transform.SetParent(parent);
+        spawn.transform.localPosition = position;
+
+        // Face toward center
+        if (position.x < 0)
+        {
+            spawn.transform.localRotation = Quaternion.Euler(0, 90, 0);
+        }
+        else if (position.x > 0)
+        {
+            spawn.transform.localRotation = Quaternion.Euler(0, -90, 0);
+        }
+    }
+
+    // === UTILITY ===
+
+    /// <summary>
+    /// Get spawn point by name.
+    /// </summary>
+    public Transform GetSpawnPoint(string name)
+    {
+        if (rinkRoot == null) return null;
+
+        Transform spawns = rinkRoot.transform.Find("SpawnPoints");
+        if (spawns == null) return null;
+
+        return spawns.Find(name);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Draw rink outline
+        Gizmos.color = Color.cyan;
+
+        Vector3 halfSize = new Vector3(length / 2f, 0, width / 2f);
+
+        // Draw rectangle outline
+        Gizmos.DrawLine(new Vector3(-halfSize.x, 0, halfSize.z), new Vector3(halfSize.x, 0, halfSize.z));
+        Gizmos.DrawLine(new Vector3(-halfSize.x, 0, -halfSize.z), new Vector3(halfSize.x, 0, -halfSize.z));
+        Gizmos.DrawLine(new Vector3(-halfSize.x, 0, halfSize.z), new Vector3(-halfSize.x, 0, -halfSize.z));
+        Gizmos.DrawLine(new Vector3(halfSize.x, 0, halfSize.z), new Vector3(halfSize.x, 0, -halfSize.z));
+
+        // Draw goal positions
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(HomeGoalPosition, new Vector3(goalDepth, goalHeight, goalWidth));
+        Gizmos.DrawWireCube(AwayGoalPosition, new Vector3(goalDepth, goalHeight, goalWidth));
+    }
+}

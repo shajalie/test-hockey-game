@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b51d2f9244b9ba44ab23198def719d6, type: 3}
+  m_Name: DefaultPlayerStats
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  maxSpeed: 12
+  accelerationForce: 45
+  brakingDrag: 3
+  iceDrag: 0.5
+  carvingSpeedPenalty: 0.15
+  turnSpeed: 720
+  puckMagnetRange: 1.5
+  puckMagnetStrength: 8
+  puckKnockLooseThreshold: 5
+  minShotPower: 10
+  maxShotPower: 35
+  chargeTime: 1.5
+  checkForce: 15
+  dashMultiplier: 1.4
+  dashDuration: 0.3
+  dashCooldown: 2

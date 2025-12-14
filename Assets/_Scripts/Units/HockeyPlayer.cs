@@ -199,7 +199,7 @@ public class HockeyPlayer : MonoBehaviour
         // Sprint multiplier (from stamina system)
         if (IsSprinting)
         {
-            acceleration *= 1.3f; // Sprint boost
+            acceleration *= 1.6f; // Sprint boost
         }
 
         // Dash gives a bigger boost
@@ -246,13 +246,13 @@ public class HockeyPlayer : MonoBehaviour
         {
             // Gradual penalty for medium turns
             float t = (angle - 45f) / 45f; // 0 to 1
-            return Mathf.Lerp(1f, 0.7f, t);
+            return Mathf.Lerp(1f, 0.8f, t);
         }
         else
         {
             // Bigger penalty for sharp turns
             float t = (angle - 90f) / 90f; // 0 to 1
-            return Mathf.Lerp(0.7f, 0.4f, t);
+            return Mathf.Lerp(0.8f, 0.6f, t);
         }
     }
 
@@ -315,7 +315,7 @@ public class HockeyPlayer : MonoBehaviour
         // Sprint increases max speed
         if (IsSprinting)
         {
-            maxSpeed *= 1.2f;
+            maxSpeed *= 1.5f;
         }
 
         // Dash increases max speed even more

@@ -916,6 +916,51 @@ public class HockeySceneSetup : EditorWindow
             bcSO.ApplyModifiedProperties();
         }
 
+        // Wire AIController references for all players
+        if (puck != null && rink != null && teamManager != null)
+        {
+            var allAIControllers = Object.FindObjectsOfType<AIController>();
+            Debug.Log($"[HockeySceneSetup] Found {allAIControllers.Length} AIController components to wire up");
+
+            foreach (var aiController in allAIControllers)
+            {
+                var player = aiController.GetComponent<HockeyPlayer>();
+                if (player == null)
+                {
+                    Debug.LogWarning($"[HockeySceneSetup] AIController on {aiController.name} has no HockeyPlayer component!");
+                    continue;
+                }
+
+                var aiSO = new SerializedObject(aiController);
+
+                // Set puck reference
+                aiSO.FindProperty("puck").objectReferenceValue = puck;
+
+                // Set rinkBuilder reference
+                aiSO.FindProperty("rinkBuilder").objectReferenceValue = rink;
+
+                // Set teamManager reference
+                aiSO.FindProperty("teamManagerRef").objectReferenceValue = teamManager;
+
+                // Set goal references based on team
+                // Team 0 = Home team (attacks away goal, defends home goal)
+                // Team 1 = Away team (attacks home goal, defends away goal)
+                if (player.TeamId == 0)
+                {
+                    aiSO.FindProperty("opponentGoal").objectReferenceValue = rink.AwayGoal?.transform;
+                    aiSO.FindProperty("ownGoal").objectReferenceValue = rink.HomeGoal?.transform;
+                }
+                else
+                {
+                    aiSO.FindProperty("opponentGoal").objectReferenceValue = rink.HomeGoal?.transform;
+                    aiSO.FindProperty("ownGoal").objectReferenceValue = rink.AwayGoal?.transform;
+                }
+
+                aiSO.ApplyModifiedProperties();
+                Debug.Log($"[HockeySceneSetup] Wired up AIController for {player.name} (Team {player.TeamId})");
+            }
+        }
+
         Debug.Log("[HockeySceneSetup] All references wired up");
     }
 

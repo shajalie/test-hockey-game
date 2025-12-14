@@ -27,6 +27,9 @@ public class AIController : MonoBehaviour
     [SerializeField] private Transform opponentGoal;
     [SerializeField] private Transform ownGoal;
     [SerializeField] private Transform homePosition;
+    [SerializeField] private Puck puck;
+    [SerializeField] private RinkBuilder rinkBuilder;
+    [SerializeField] private TeamManager teamManagerRef;
 
     [Header("AI Settings")]
     [SerializeField] private float reactionTime = 0.2f;
@@ -85,16 +88,36 @@ public class AIController : MonoBehaviour
 
     private void Start()
     {
-        // Find puck in scene
-        targetPuck = FindObjectOfType<Puck>();
+        // Use serialized puck reference if set, otherwise find in scene
+        if (puck != null)
+        {
+            targetPuck = puck;
+        }
+        else
+        {
+            targetPuck = FindObjectOfType<Puck>();
+        }
 
         if (targetPuck == null)
         {
             Debug.LogWarning("[AIController] No puck found in scene!");
         }
 
-        // Find team manager
-        teamManager = FindObjectOfType<TeamManager>();
+        // Use serialized team manager reference if set, otherwise find in scene
+        if (teamManagerRef != null)
+        {
+            teamManager = teamManagerRef;
+        }
+        else
+        {
+            teamManager = FindObjectOfType<TeamManager>();
+        }
+
+        // Auto-find goals based on team (only if not manually set)
+        if (opponentGoal == null || ownGoal == null)
+        {
+            FindGoals();
+        }
 
         // Initialize team lists
         teammates = new List<HockeyPlayer>();
@@ -128,6 +151,50 @@ public class AIController : MonoBehaviour
     }
 
     #region Initialization & Team Awareness
+
+    /// <summary>
+    /// Auto-find goals in the scene based on team assignment.
+    /// </summary>
+    private void FindGoals()
+    {
+        Goal[] allGoals = FindObjectsOfType<Goal>();
+
+        if (allGoals.Length == 0)
+        {
+            Debug.LogWarning($"[AIController] No goals found in scene for {player.name}!");
+            return;
+        }
+
+        foreach (Goal goal in allGoals)
+        {
+            // If goal's teamIndex matches our team, it's our goal (we defend it)
+            // If goal's teamIndex is different, it's the opponent's goal (we attack it)
+            if (goal.TeamIndex == player.TeamId)
+            {
+                ownGoal = goal.transform;
+            }
+            else
+            {
+                opponentGoal = goal.transform;
+            }
+        }
+
+        // Log results
+        if (opponentGoal == null)
+        {
+            Debug.LogWarning($"[AIController] Could not find opponent goal for {player.name} (Team {player.TeamId})");
+        }
+
+        if (ownGoal == null)
+        {
+            Debug.LogWarning($"[AIController] Could not find own goal for {player.name} (Team {player.TeamId})");
+        }
+
+        if (opponentGoal != null && ownGoal != null)
+        {
+            Debug.Log($"[AIController] {player.name} (Team {player.TeamId}) - Attacking: {opponentGoal.name}, Defending: {ownGoal.name}");
+        }
+    }
 
     /// <summary>
     /// Determine this player's role based on their position.

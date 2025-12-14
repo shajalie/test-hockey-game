@@ -9,10 +9,10 @@ public class PlayerStats : ScriptableObject
 {
     [Header("Movement - Physics Based")]
     [Tooltip("Maximum skating speed (units/second)")]
-    public float maxSpeed = 17f;
+    public float maxSpeed = 25f;
 
     [Tooltip("Force applied for acceleration (Newtons)")]
-    public float accelerationForce = 70f;
+    public float accelerationForce = 120f;
 
     [Tooltip("How quickly the player decelerates when not inputting (drag factor)")]
     public float brakingDrag = 3f;
@@ -52,7 +52,7 @@ public class PlayerStats : ScriptableObject
     public float checkForce = 15f;
 
     [Tooltip("Dash/sprint speed multiplier")]
-    public float dashMultiplier = 1.7f;
+    public float dashMultiplier = 2.0f;
 
     [Tooltip("Dash duration in seconds")]
     public float dashDuration = 0.3f;

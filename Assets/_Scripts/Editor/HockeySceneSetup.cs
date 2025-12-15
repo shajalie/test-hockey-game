@@ -99,11 +99,11 @@ public class HockeySceneSetup : EditorWindow
         if (playerStats == null)
         {
             playerStats = ScriptableObject.CreateInstance<PlayerStats>();
-            playerStats.maxSpeed = 8f;
-            playerStats.accelerationForce = 12f;
-            playerStats.maxShotPower = 15f;
-            playerStats.puckMagnetStrength = 0.7f;
-            playerStats.dashMultiplier = 1.5f;
+            playerStats.maxSpeed = 25f;
+            playerStats.accelerationForce = 120f;
+            playerStats.maxShotPower = 35f;
+            playerStats.puckMagnetStrength = 8f;
+            playerStats.dashMultiplier = 2.0f;
             playerStats.dashCooldown = 2f;
             AssetDatabase.CreateAsset(playerStats, "Assets/GameData/DefaultPlayerStats.asset");
             Debug.Log("[HockeySceneSetup] Created DefaultPlayerStats.asset");
@@ -497,7 +497,7 @@ public class HockeySceneSetup : EditorWindow
             var rb = skaterObj.AddComponent<Rigidbody>();
             rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             rb.mass = 80f;
-            rb.linearDamping = 0.5f;
+            rb.linearDamping = 0f; // Let HockeyPlayer script control damping dynamically
 
             // Collider
             var col = skaterObj.AddComponent<CapsuleCollider>();

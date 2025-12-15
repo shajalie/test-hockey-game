@@ -15,9 +15,9 @@ public class HockeyPlayer : MonoBehaviour
 
     [Header("Stamina System")]
     [SerializeField] private float maxStamina = 100f;
-    [SerializeField] private float staminaDrainRate = 20f; // Per second while sprinting
-    [SerializeField] private float staminaRegenRate = 25f; // Per second when not sprinting
-    [SerializeField] private float minStaminaToSprint = 10f;
+    [SerializeField] private float staminaDrainRate = 15f; // Per second while sprinting (reduced)
+    [SerializeField] private float staminaRegenRate = 35f; // Per second when not sprinting (increased)
+    [SerializeField] private float minStaminaToSprint = 5f; // Reduced threshold
 
     [Header("Team")]
     [SerializeField] private int teamId = 0; // 0 = Home, 1 = Away
@@ -199,7 +199,7 @@ public class HockeyPlayer : MonoBehaviour
         // Sprint multiplier (from stamina system)
         if (IsSprinting)
         {
-            acceleration *= 1.6f; // Sprint boost
+            acceleration *= 1.8f; // Sprint boost (increased for arcade feel)
         }
 
         // Dash gives a bigger boost
@@ -220,6 +220,7 @@ public class HockeyPlayer : MonoBehaviour
     /// <summary>
     /// Simple turn penalty - lose speed on sharp turns but stay responsive.
     /// This replaces the complex carving system.
+    /// REDUCED for arcade-style responsiveness.
     /// </summary>
     private float CalculateTurnSpeedPenalty(Vector3 desiredDirection)
     {
@@ -234,25 +235,25 @@ public class HockeyPlayer : MonoBehaviour
         // Calculate angle between current movement and desired direction
         float angle = Vector3.Angle(velocityDir, desiredDirection);
 
-        // Simple penalty curve:
-        // 0-45 degrees: no penalty (smooth turns)
-        // 45-90 degrees: gradual penalty (medium turns)
-        // 90-180 degrees: bigger penalty (sharp turns/reversals)
-        if (angle < 45f)
+        // Reduced penalty curve for arcade feel:
+        // 0-60 degrees: no penalty (smooth turns)
+        // 60-120 degrees: minimal penalty (medium turns)
+        // 120-180 degrees: small penalty (sharp turns/reversals)
+        if (angle < 60f)
         {
-            return 1f; // No penalty for gentle turns
+            return 1f; // No penalty for gentle/medium turns
         }
-        else if (angle < 90f)
+        else if (angle < 120f)
         {
-            // Gradual penalty for medium turns
-            float t = (angle - 45f) / 45f; // 0 to 1
-            return Mathf.Lerp(1f, 0.8f, t);
+            // Minimal penalty for medium turns
+            float t = (angle - 60f) / 60f; // 0 to 1
+            return Mathf.Lerp(1f, 0.9f, t);
         }
         else
         {
-            // Bigger penalty for sharp turns
-            float t = (angle - 90f) / 90f; // 0 to 1
-            return Mathf.Lerp(0.8f, 0.6f, t);
+            // Small penalty for sharp turns (arcade style)
+            float t = (angle - 120f) / 60f; // 0 to 1
+            return Mathf.Lerp(0.9f, 0.8f, t);
         }
     }
 
@@ -315,7 +316,7 @@ public class HockeyPlayer : MonoBehaviour
         // Sprint increases max speed
         if (IsSprinting)
         {
-            maxSpeed *= 1.5f;
+            maxSpeed *= 1.7f; // Increased from 1.5x for more noticeable speed boost
         }
 
         // Dash increases max speed even more

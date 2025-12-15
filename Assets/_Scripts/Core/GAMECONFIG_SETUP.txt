@@ -1,0 +1,358 @@
+================================================================================
+GAME CONFIG SYSTEM - SETUP AND USAGE GUIDE
+================================================================================
+
+OVERVIEW
+--------
+The GameConfig system provides a centralized, ScriptableObject-based
+configuration for all game settings including match rules, player movement,
+AI difficulty, physics, and more.
+
+FILES CREATED
+-------------
+1. GameConfig.cs - ScriptableObject that stores all settings
+2. GameConfigManager.cs - Singleton manager that loads and applies settings
+3. GameConfigExample.cs - Example usage patterns
+
+================================================================================
+SETUP INSTRUCTIONS
+================================================================================
+
+STEP 1: Create a GameConfig Asset
+----------------------------------
+1. In Unity, right-click in the Project window
+2. Select: Create > Hockey > Game Config
+3. Name it "DefaultGameConfig"
+4. Configure your desired settings in the Inspector
+
+STEP 2: Create Resources Folder Structure
+------------------------------------------
+1. Create folder: Assets/Resources
+2. Create subfolder: Assets/Resources/Configs
+3. Move your DefaultGameConfig into: Assets/Resources/Configs/
+
+STEP 3: Add GameConfigManager to Scene
+---------------------------------------
+Option A - Manual Setup:
+1. Create empty GameObject in your scene
+2. Name it "GameConfigManager"
+3. Add the GameConfigManager component
+4. The default path "Configs/DefaultGameConfig" should work automatically
+
+Option B - Automatic (Recommended):
+1. The GameConfigManager will auto-create itself on first access
+2. Simply call GameConfigManager.Instance from any script
+3. It will load the config from Resources/Configs/DefaultGameConfig
+
+STEP 4: (Optional) Make It Persistent
+--------------------------------------
+The GameConfigManager automatically marks itself as DontDestroyOnLoad,
+so it will persist across scene changes.
+
+================================================================================
+USAGE EXAMPLES
+================================================================================
+
+BASIC USAGE - Reading Settings
+-------------------------------
+// Access the config anywhere in your code:
+GameConfig config = GameConfigManager.Instance.Config;
+
+// Read specific settings:
+float speed = config.GetEffectivePlayerSpeed();
+bool offsidesEnabled = config.enableOffsides;
+int periodLength = config.periodLengthSeconds;
+
+CHANGING SETTINGS AT RUNTIME
+-----------------------------
+// Change difficulty:
+GameConfigManager.Instance.SetDifficulty(Difficulty.Hard);
+
+// Adjust player speed:
+GameConfigManager.Instance.SetPlayerSpeedMultiplier(1.5f);
+
+// Toggle rules:
+GameConfigManager.Instance.SetRuleEnabled("offsides", false);
+
+// Change game mode:
+GameConfigManager.Instance.SetGameMode(GameMode.Tournament);
+
+LISTENING TO CONFIG CHANGES
+----------------------------
+void Start()
+{
+    // Subscribe to events:
+    GameConfigManager.Instance.OnConfigChanged += HandleConfigChanged;
+    GameConfigManager.Instance.OnDifficultyChanged += HandleDifficultyChanged;
+}
+
+void HandleConfigChanged(GameConfig config)
+{
+    // React to any config change
+    UpdatePlayerMovement();
+}
+
+void HandleDifficultyChanged(Difficulty newDifficulty)
+{
+    // React to difficulty change
+    UpdateAIBehavior();
+}
+
+void OnDestroy()
+{
+    // Always unsubscribe!
+    GameConfigManager.Instance.OnConfigChanged -= HandleConfigChanged;
+}
+
+PLAYER MOVEMENT EXAMPLE
+-----------------------
+public class PlayerMovement : MonoBehaviour
+{
+    private void Update()
+    {
+        GameConfig config = GameConfigManager.Instance.Config;
+
+        float speed = config.GetEffectivePlayerSpeed();
+        float sprintSpeed = config.GetSprintSpeed();
+        float acceleration = config.playerAcceleration;
+
+        // Use these values for movement...
+    }
+}
+
+AI BEHAVIOR EXAMPLE
+-------------------
+public class AIController : MonoBehaviour
+{
+    private void Start()
+    {
+        GameConfig config = GameConfigManager.Instance.Config;
+
+        float reactionTime = config.aiReactionTime;
+        float accuracy = config.aiAccuracyMultiplier;
+
+        // Configure AI based on these settings...
+    }
+}
+
+================================================================================
+CONFIGURATION CATEGORIES
+================================================================================
+
+MATCH SETTINGS
+--------------
+- Period length and count
+- Overtime and shootout settings
+- Time-related configuration
+
+TEAM SETTINGS
+-------------
+- Players per team (3v3, 4v4, 5v5)
+- Goalie inclusion
+- Line changes
+- Bench size
+
+PLAYER MOVEMENT (IMPORTANT!)
+----------------------------
+- playerSpeedMultiplier: Global speed adjustment (0.1 - 3.0)
+- basePlayerSpeed: Base movement speed in m/s
+- sprintMultiplier: How much faster sprinting is
+- Acceleration, deceleration, turn speed
+
+STAMINA SYSTEM
+--------------
+- Enable/disable stamina
+- Max stamina value
+- Drain and recovery rates
+- Low stamina penalties
+
+RULES
+-----
+- Offsides, icing, penalties
+- Two-line pass, checking, fighting
+- Penalty durations (minor, major, misconduct)
+
+AI DIFFICULTY
+-------------
+- Reaction time
+- Accuracy multiplier
+- Aggression level
+- Automatically adjusted with difficulty presets
+
+PHYSICS
+-------
+- Puck mass, friction, bounciness
+- Physics update rate
+- Max puck speed
+
+SHOOTING & PASSING
+------------------
+- Shot power and accuracy
+- Charge time and power multiplier
+- Pass power and accuracy
+
+GOALIE SETTINGS
+---------------
+- Reaction time
+- Save percentage
+- Movement speed
+
+CAMERA, AUDIO, UI
+-----------------
+- Camera follow settings
+- Volume controls
+- HUD toggles
+
+================================================================================
+CREATING MULTIPLE CONFIGS
+================================================================================
+
+You can create different configs for different scenarios:
+
+1. DefaultGameConfig - Standard settings
+2. ArcadeGameConfig - Fast-paced, simplified rules
+3. SimulationGameConfig - Realistic, all rules enabled
+4. TrainingGameConfig - Practice mode settings
+
+To switch between them at runtime:
+    GameConfig arcadeConfig = Resources.Load<GameConfig>("Configs/ArcadeGameConfig");
+    GameConfigManager.Instance.LoadConfig(arcadeConfig);
+
+================================================================================
+DIFFICULTY PRESETS
+================================================================================
+
+The system includes automatic difficulty presets that adjust multiple settings:
+
+EASY:
+- AI Reaction Time: 0.8s
+- AI Accuracy: 0.5x
+- Goalie Save %: 65%
+
+NORMAL:
+- AI Reaction Time: 0.4s
+- AI Accuracy: 1.0x
+- Goalie Save %: 80%
+
+HARD:
+- AI Reaction Time: 0.2s
+- AI Accuracy: 1.5x
+- Goalie Save %: 90%
+
+LEGENDARY:
+- AI Reaction Time: 0.1s
+- AI Accuracy: 2.0x
+- Goalie Save %: 95%
+
+Apply a preset:
+    GameConfigManager.Instance.SetDifficulty(Difficulty.Legendary);
+
+Or customize manually:
+    GameConfig config = GameConfigManager.Instance.Config;
+    config.aiReactionTime = 0.3f;
+    config.aiAccuracyMultiplier = 1.2f;
+
+================================================================================
+TIPS & BEST PRACTICES
+================================================================================
+
+1. ALWAYS access config through GameConfigManager.Instance.Config
+   - Don't create your own references to ScriptableObject assets
+   - This ensures you're using the active runtime config
+
+2. Subscribe to events when config changes affect your systems
+   - Movement systems should listen to config changes
+   - AI should react to difficulty changes
+   - UI should update when settings change
+
+3. Create different configs for testing
+   - DebugConfig with exaggerated values for testing
+   - FastTestConfig with short periods for quick testing
+
+4. Use the validation in OnValidate()
+   - GameConfig already validates sensible ranges
+   - Add more validation if needed for your game
+
+5. Use Context Menu items
+   - Right-click GameConfigManager component
+   - Select "Print Config Summary" to see current settings
+
+6. Speed Multiplier is IMPORTANT
+   - Use playerSpeedMultiplier for global speed adjustments
+   - Perfect for game feel tuning
+   - Easy to adjust in Inspector during playtesting
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+PROBLEM: "Could not load config from: Configs/DefaultGameConfig"
+SOLUTION:
+- Ensure config is in Assets/Resources/Configs/ folder
+- Check the defaultConfigPath field in GameConfigManager
+- The manager will create a runtime config as fallback
+
+PROBLEM: Config changes don't apply
+SOLUTION:
+- Make sure you're modifying the runtime config, not the asset
+- Changes to ScriptableObject assets in Resources don't persist in builds
+- Use GameConfigManager methods to change settings at runtime
+
+PROBLEM: Settings reset when changing scenes
+SOLUTION:
+- GameConfigManager is marked DontDestroyOnLoad
+- Ensure you're not creating multiple instances
+- Use the singleton Instance property
+
+PROBLEM: Player speed not changing
+SOLUTION:
+- Make sure your movement code reads from the config
+- Call GetEffectivePlayerSpeed() to get the multiplied value
+- Subscribe to OnConfigChanged to update movement when settings change
+
+================================================================================
+INTEGRATION WITH EXISTING SYSTEMS
+================================================================================
+
+If you have existing player movement, AI, or other systems, integrate like this:
+
+PLAYER CONTROLLER:
+    private GameConfig config;
+
+    void Start() {
+        config = GameConfigManager.Instance.Config;
+        GameConfigManager.Instance.OnConfigChanged += OnConfigChanged;
+    }
+
+    void OnConfigChanged(GameConfig newConfig) {
+        config = newConfig;
+        // Refresh cached values
+    }
+
+    void Update() {
+        float speed = config.GetEffectivePlayerSpeed();
+        // Use speed in movement calculations
+    }
+
+MATCH MANAGER:
+    void StartMatch() {
+        GameConfig config = GameConfigManager.Instance.Config;
+        int periodLength = config.periodLengthSeconds;
+        int periodCount = config.periodCount;
+        // Setup match based on config
+    }
+
+UI SETTINGS MENU:
+    void OnSpeedSliderChanged(float value) {
+        GameConfigManager.Instance.SetPlayerSpeedMultiplier(value);
+    }
+
+    void OnDifficultyDropdownChanged(int index) {
+        GameConfigManager.Instance.SetDifficulty((Difficulty)index);
+    }
+
+================================================================================
+
+For more examples, see GameConfigExample.cs
+
+Questions? Check the inline documentation in the source files.

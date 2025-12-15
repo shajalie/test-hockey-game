@@ -27,6 +27,7 @@ public class InputManager : MonoBehaviour
     private bool isControllerConnected;
     private Vector2 currentMoveInput;
     private Vector2 currentAimInput;
+    private bool isSprinting;
 
     // Events
     public event Action<bool> OnControllerConnectionChanged;
@@ -65,10 +66,19 @@ public class InputManager : MonoBehaviour
         inputActions.Player.Shoot.canceled += OnShootReleased;
         inputActions.Player.Pass.performed += OnPass;
         inputActions.Player.Dash.performed += OnDash;
+        inputActions.Player.Dash.started += OnSprintStarted;
+        inputActions.Player.Dash.canceled += OnSprintCanceled;
 
         // Subscribe to device changes
         InputSystem.onDeviceChange += OnDeviceChange;
         InputUser.onChange += OnInputUserChange;
+
+        // Subscribe to TeamManager player switch events
+        TeamManager tm = FindObjectOfType<TeamManager>();
+        if (tm != null)
+        {
+            tm.OnPlayerSwitched += OnPlayerSwitched;
+        }
 
         // Initial controller check
         CheckControllerConnection();
@@ -84,9 +94,18 @@ public class InputManager : MonoBehaviour
         inputActions.Player.Shoot.canceled -= OnShootReleased;
         inputActions.Player.Pass.performed -= OnPass;
         inputActions.Player.Dash.performed -= OnDash;
+        inputActions.Player.Dash.started -= OnSprintStarted;
+        inputActions.Player.Dash.canceled -= OnSprintCanceled;
 
         InputSystem.onDeviceChange -= OnDeviceChange;
         InputUser.onChange -= OnInputUserChange;
+
+        // Unsubscribe from TeamManager
+        TeamManager tm = FindObjectOfType<TeamManager>();
+        if (tm != null)
+        {
+            tm.OnPlayerSwitched -= OnPlayerSwitched;
+        }
 
         inputActions.Disable();
     }
@@ -98,6 +117,7 @@ public class InputManager : MonoBehaviour
         {
             controlledPlayer.SetMoveInput(currentMoveInput);
             controlledPlayer.SetAimInput(currentAimInput);
+            controlledPlayer.SetSprintInput(isSprinting);
         }
 
         if (shootingController != null)
@@ -136,6 +156,21 @@ public class InputManager : MonoBehaviour
     private void OnDash(InputAction.CallbackContext context)
     {
         controlledPlayer?.TriggerDash();
+    }
+
+    private void OnSprintStarted(InputAction.CallbackContext ctx)
+    {
+        isSprinting = true;
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext ctx)
+    {
+        isSprinting = false;
+    }
+
+    private void OnPlayerSwitched(HockeyPlayer newPlayer)
+    {
+        controlledPlayer = newPlayer;
     }
 
     // === DEVICE MANAGEMENT ===

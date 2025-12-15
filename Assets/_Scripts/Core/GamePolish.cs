@@ -378,13 +378,21 @@ namespace HockeyGame.Core
         private IEnumerator SlowMotionCoroutine(float duration)
         {
             isInSlowMotion = true;
-            Time.timeScale = slowMotionTimeScale;
-            Time.fixedDeltaTime = 0.02f * slowMotionTimeScale;
+            // SAFETY: Only apply slow-mo if not already in slow-mo/freeze
+            if (!isInFreezeFrame && Time.timeScale >= 0.9f)
+            {
+                Time.timeScale = slowMotionTimeScale;
+                Time.fixedDeltaTime = 0.02f * slowMotionTimeScale;
+            }
 
             yield return new WaitForSecondsRealtime(duration);
 
-            Time.timeScale = 1f;
-            Time.fixedDeltaTime = 0.02f;
+            // SAFETY: Only restore if we're still in slow-mo (not paused or frozen)
+            if (isInSlowMotion && !isInFreezeFrame && Time.timeScale < 0.9f)
+            {
+                Time.timeScale = 1f;
+                Time.fixedDeltaTime = 0.02f;
+            }
             isInSlowMotion = false;
         }
 

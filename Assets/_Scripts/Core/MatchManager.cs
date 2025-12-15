@@ -81,6 +81,7 @@ public class MatchManager : MonoBehaviour
         if (GameManager.Instance != null && GameManager.Instance.IsRunActive)
         {
             SetupMatch();
+            StartMatch(); // Ensure match starts
         }
         else
         {
@@ -93,7 +94,19 @@ public class MatchManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isMatchRunning || isPaused) return;
+        if (!isMatchRunning || isPaused)
+        {
+            // Debug: Log why timer is not updating
+            if (!isMatchRunning)
+            {
+                // Only log once per second to avoid spam
+                if (Time.frameCount % 60 == 0)
+                {
+                    Debug.LogWarning("[MatchManager] Timer not updating - isMatchRunning is FALSE");
+                }
+            }
+            return;
+        }
 
         // Handle intermission
         if (isIntermission)
@@ -183,9 +196,12 @@ public class MatchManager : MonoBehaviour
 
     public void StartMatch()
     {
-        Debug.Log("[MatchManager] Starting match!");
+        Debug.Log($"[MatchManager] Starting match! isMatchRunning will be set to true");
         isMatchRunning = true;
         isPaused = false;
+        Time.timeScale = 1f; // Ensure game is not paused
+
+        Debug.Log($"[MatchManager] Match state - Running: {isMatchRunning}, Paused: {isPaused}, Time.timeScale: {Time.timeScale}");
 
         ShowMessage("FACE OFF!", 2f);
 
@@ -361,12 +377,18 @@ public class MatchManager : MonoBehaviour
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0f : 1f;
 
+        // SAFETY: Ensure physics timestep is correct
+        if (!isPaused)
+        {
+            Time.fixedDeltaTime = 0.02f;
+        }
+
         if (pausePanel != null)
         {
             pausePanel.SetActive(isPaused);
         }
 
-        Debug.Log($"[MatchManager] Paused: {isPaused}");
+        Debug.Log($"[MatchManager] Paused: {isPaused}, TimeScale: {Time.timeScale}");
     }
 
     public void ResumeMatch()
@@ -405,14 +427,15 @@ public class MatchManager : MonoBehaviour
             if (isIntermission)
             {
                 // Show intermission timer
-                int seconds = Mathf.FloorToInt(intermissionTimer);
+                int seconds = Mathf.Max(0, Mathf.FloorToInt(intermissionTimer));
                 timerText.text = $"INTERMISSION: {seconds}s";
             }
             else
             {
-                // Show period timer
-                int minutes = Mathf.FloorToInt(periodTimer / 60f);
-                int seconds = Mathf.FloorToInt(periodTimer % 60f);
+                // Show period timer (prevent negative display)
+                float displayTimer = Mathf.Max(0, periodTimer);
+                int minutes = Mathf.FloorToInt(displayTimer / 60f);
+                int seconds = Mathf.FloorToInt(displayTimer % 60f);
 
                 string periodLabel = isOvertime ? "OT" : $"P{currentPeriod}";
                 timerText.text = $"{periodLabel} {minutes}:{seconds:00}";

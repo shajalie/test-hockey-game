@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b51d2f9244b9ba44ab23198def719d6, type: 3}
   m_Name: GoaliePlayerStats
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  maxSpeed: 5
-  accelerationForce: 8
+  maxSpeed: 18
+  accelerationForce: 100
   brakingDrag: 3
-  iceDrag: 0.5
-  carvingSpeedPenalty: 0.15
-  turnSpeed: 720
-  puckMagnetRange: 1.5
-  puckMagnetStrength: 0.9
-  puckKnockLooseThreshold: 5
-  minShotPower: 10
-  maxShotPower: 10
+  iceDrag: 0.3
+  carvingSpeedPenalty: 0.1
+  turnSpeed: 1000
+  puckMagnetRange: 3
+  puckMagnetStrength: 15
+  puckKnockLooseThreshold: 8
+  minShotPower: 12
+  maxShotPower: 30
   chargeTime: 1.5
-  checkForce: 15
-  dashMultiplier: 1.2
+  checkForce: 18
+  dashMultiplier: 1.8
   dashDuration: 0.3
-  dashCooldown: 3
+  dashCooldown: 2

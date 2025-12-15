@@ -9,16 +9,16 @@ public class PlayerStats : ScriptableObject
 {
     [Header("Movement - Physics Based")]
     [Tooltip("Maximum skating speed (units/second)")]
-    public float maxSpeed = 25f;
+    public float maxSpeed = 30f;
 
     [Tooltip("Force applied for acceleration (Newtons)")]
-    public float accelerationForce = 120f;
+    public float accelerationForce = 150f;
 
     [Tooltip("How quickly the player decelerates when not inputting (drag factor)")]
     public float brakingDrag = 3f;
 
     [Tooltip("Normal movement drag on ice")]
-    public float iceDrag = 0.35f;
+    public float iceDrag = 0.25f;
 
     [Tooltip("Speed reduction when carving/turning sharply (0-1)")]
     [Range(0f, 1f)]

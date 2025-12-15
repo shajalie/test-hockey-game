@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b51d2f9244b9ba44ab23198def719d6, type: 3}
   m_Name: DefaultPlayerStats
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  maxSpeed: 12
-  accelerationForce: 45
-  brakingDrag: 3
-  iceDrag: 0.5
-  carvingSpeedPenalty: 0.15
-  turnSpeed: 720
-  puckMagnetRange: 1.5
-  puckMagnetStrength: 8
-  puckKnockLooseThreshold: 5
-  minShotPower: 10
-  maxShotPower: 35
-  chargeTime: 1.5
-  checkForce: 15
-  dashMultiplier: 1.4
-  dashDuration: 0.3
-  dashCooldown: 2
+  maxSpeed: 28
+  accelerationForce: 150
+  brakingDrag: 2.5
+  iceDrag: 0.2
+  carvingSpeedPenalty: 0.08
+  turnSpeed: 1200
+  puckMagnetRange: 2.5
+  puckMagnetStrength: 12
+  puckKnockLooseThreshold: 6
+  minShotPower: 15
+  maxShotPower: 45
+  chargeTime: 1.2
+  checkForce: 20
+  dashMultiplier: 2.2
+  dashDuration: 0.35
+  dashCooldown: 1.5

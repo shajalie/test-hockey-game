@@ -1,0 +1,78 @@
+================================================================================
+GAME CONFIG SYSTEM - QUICK REFERENCE
+================================================================================
+
+QUICK SETUP (3 STEPS)
+---------------------
+1. Create: Right-click > Create > Hockey > Game Config
+2. Save to: Assets/Resources/Configs/DefaultGameConfig
+3. Done! GameConfigManager auto-loads it on startup
+
+QUICK ACCESS
+------------
+// Get config anywhere:
+GameConfig config = GameConfigManager.Instance.Config;
+
+// Read settings:
+float speed = config.GetEffectivePlayerSpeed();
+bool offsides = config.enableOffsides;
+
+COMMON OPERATIONS
+-----------------
+// Change difficulty:
+GameConfigManager.Instance.SetDifficulty(Difficulty.Hard);
+
+// Adjust speed:
+GameConfigManager.Instance.SetPlayerSpeedMultiplier(1.5f);
+
+// Toggle rule:
+GameConfigManager.Instance.SetRuleEnabled("offsides", false);
+
+// Change mode:
+GameConfigManager.Instance.SetGameMode(GameMode.Tournament);
+
+// Reset all:
+GameConfigManager.Instance.ResetToDefaults();
+
+LISTEN TO CHANGES
+-----------------
+void Start() {
+    GameConfigManager.Instance.OnConfigChanged += HandleConfigChanged;
+}
+
+void HandleConfigChanged(GameConfig config) {
+    // React to changes
+}
+
+void OnDestroy() {
+    GameConfigManager.Instance.OnConfigChanged -= HandleConfigChanged;
+}
+
+DEBUG PANEL
+-----------
+1. Add GameConfigDebugUI component to any GameObject
+2. Press F1 in Play mode to toggle debug panel
+3. Change settings in real-time and see effects
+
+KEY SETTINGS
+------------
+playerSpeedMultiplier - Global speed adjustment (IMPORTANT!)
+periodLengthSeconds - Match duration
+playersPerTeam - 3v3, 4v4, or 5v5
+difficulty - Easy/Normal/Hard/Legendary (auto-adjusts AI)
+enableOffsides/Icing/Penalties - Rule toggles
+
+ENUMS
+-----
+GameMode: QuickMatch, Practice, Season, Tournament, Shootout, Challenge
+Difficulty: Easy, Normal, Hard, Legendary
+
+FILES
+-----
+GameConfig.cs - ScriptableObject with all settings
+GameConfigManager.cs - Singleton manager
+GameConfigExample.cs - Usage examples
+GameConfigDebugUI.cs - Runtime debug panel
+GAMECONFIG_SETUP.txt - Full documentation
+
+================================================================================

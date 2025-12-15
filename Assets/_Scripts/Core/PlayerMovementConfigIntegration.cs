@@ -242,7 +242,7 @@ namespace HockeyGame.Core
                 GUILayout.Label($"Stamina: {currentStamina:F0} / {config.maxStamina:F0}");
 
                 // Simple stamina bar
-                Rect staminaBarBg = GUILayout.GetLastRect();
+                Rect staminaBarBg = GUILayoutUtility.GetLastRect();
                 staminaBarBg.y += 20;
                 staminaBarBg.width = 200;
                 staminaBarBg.height = 20;

@@ -51,9 +51,17 @@ public class GoalieController : MonoBehaviour
     [SerializeField] private float coverPuckDelay = 0.3f;
     [SerializeField] private float whistleDelay = 1.5f;
 
+    [Header("Team")]
+    [SerializeField] private int teamId = 0;
+
     [Header("Debug")]
     [SerializeField] private bool showDebugGizmos = true;
     [SerializeField] private bool showDebugLogs = false;
+
+    /// <summary>
+    /// The team this goalie belongs to (0 or 1).
+    /// </summary>
+    public int TeamId => teamId;
 
     // Components
     private Rigidbody rb;

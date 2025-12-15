@@ -46,7 +46,7 @@ public class MainMenuController : MonoBehaviour
     /// <summary>
     /// Practice mode variations.
     /// </summary>
-    public enum PracticeMode
+    public enum PracticeType
     {
         FreeSkate,
         ShootingPractice,
@@ -454,11 +454,11 @@ public class MainMenuController : MonoBehaviour
         SetupButtonContainer(buttonContainer.GetComponent<RectTransform>(), new Vector2(500, 500));
 
         CreatePracticeButton(buttonContainer.transform, "Free Skate", "FREE SKATE",
-            "Skate around freely", PracticeMode.FreeSkate, 0);
+            "Skate around freely", PracticeType.FreeSkate, 0);
         CreatePracticeButton(buttonContainer.transform, "Shooting Practice", "SHOOTING PRACTICE",
-            "Practice your shots", PracticeMode.ShootingPractice, 1);
+            "Practice your shots", PracticeType.ShootingPractice, 1);
         CreatePracticeButton(buttonContainer.transform, "Goalie Practice", "GOALIE PRACTICE",
-            "Practice goaltending", PracticeMode.GoaliePractice, 2);
+            "Practice goaltending", PracticeType.GoaliePractice, 2);
 
         CreateBackButton(practiceOptionsScreen.transform, OnPracticeOptionsBackClicked);
     }
@@ -726,7 +726,7 @@ public class MainMenuController : MonoBehaviour
         desc.color = new Color(0.8f, 0.8f, 0.8f, 1f);
     }
 
-    private void CreatePracticeButton(Transform parent, string name, string text, string description, PracticeMode mode, int index)
+    private void CreatePracticeButton(Transform parent, string name, string text, string description, PracticeType mode, int index)
     {
         float yPos = 150 - (index * 150);
 
@@ -1220,7 +1220,7 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    private void OnPracticeModeClicked(PracticeMode mode)
+    private void OnPracticeModeClicked(PracticeType mode)
     {
         matchConfig.practiceMode = mode;
         matchConfig.gameMode = GameMode.PracticeMode;
@@ -1689,8 +1689,8 @@ v1.0.0
 [System.Serializable]
 public class MatchConfiguration
 {
-    public GameMode gameMode = GameMode.QuickMatch;
-    public PracticeMode practiceMode = PracticeMode.FreeSkate;
+    public MainMenuController.GameMode gameMode = MainMenuController.GameMode.QuickMatch;
+    public MainMenuController.PracticeType practiceMode = MainMenuController.PracticeType.FreeSkate;
 
     public string homeTeamName = "Home Team";
     public string awayTeamName = "Away Team";
@@ -1701,7 +1701,7 @@ public class MatchConfiguration
     public int periodLengthMinutes = 5;
     public int numPeriods = 3;
 
-    public Difficulty difficulty = Difficulty.Normal;
+    public MainMenuController.Difficulty difficulty = MainMenuController.Difficulty.Normal;
 
     public bool enableOffsides = true;
     public bool enableIcing = true;
@@ -1713,36 +1713,4 @@ public class MatchConfiguration
                $"Players: {playersPerTeam}v{playersPerTeam}, Periods: {numPeriods}x{periodLengthMinutes}min, " +
                $"Difficulty: {difficulty}";
     }
-}
-
-/// <summary>
-/// Game mode options (moved here to avoid conflicts).
-/// </summary>
-public enum GameMode
-{
-    QuickMatch,
-    PracticeMode,
-    SeasonMode,
-    Tournament,
-    Shootout
-}
-
-/// <summary>
-/// Practice mode options (moved here to avoid conflicts).
-/// </summary>
-public enum PracticeMode
-{
-    FreeSkate,
-    ShootingPractice,
-    GoaliePractice
-}
-
-/// <summary>
-/// Difficulty levels (moved here to avoid conflicts).
-/// </summary>
-public enum Difficulty
-{
-    Easy,
-    Normal,
-    Hard
 }

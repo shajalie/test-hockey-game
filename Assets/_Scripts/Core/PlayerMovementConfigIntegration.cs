@@ -91,7 +91,7 @@ namespace HockeyGame.Core
             // Calculate desired velocity
             Vector3 targetVelocity = new Vector3(
                 movementInput.x * targetSpeed,
-                rb.velocity.y, // Preserve Y velocity for physics
+                rb.linearVelocity.y, // Preserve Y velocity for physics
                 movementInput.y * targetSpeed
             );
 
@@ -102,13 +102,13 @@ namespace HockeyGame.Core
 
             // Smoothly interpolate to target velocity
             Vector3 newVelocity = Vector3.MoveTowards(
-                rb.velocity,
+                rb.linearVelocity,
                 targetVelocity,
                 acceleration * Time.fixedDeltaTime
             );
 
             // Apply velocity
-            rb.velocity = newVelocity;
+            rb.linearVelocity = newVelocity;
 
             // Apply rotation if moving
             if (movementInput.magnitude > 0.1f)
@@ -117,7 +117,7 @@ namespace HockeyGame.Core
             }
 
             // Track current speed for debug
-            currentSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
+            currentSpeed = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude;
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace HockeyGame.Core
 
             // Draw velocity vector
             Gizmos.color = Color.green;
-            Gizmos.DrawRay(transform.position, rb.velocity);
+            Gizmos.DrawRay(transform.position, rb.linearVelocity);
 
             // Draw target direction
             Gizmos.color = Color.yellow;

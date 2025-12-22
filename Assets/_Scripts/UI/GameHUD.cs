@@ -557,11 +557,26 @@ public class GameHUD : MonoBehaviour
         if (timerText == null) return;
 
         // Get match time from MatchManager if available
-        if (matchManager != null)
+        if (matchManager != null && matchManager.IsMatchRunning)
         {
-            // MatchManager doesn't expose timer directly, so we'll use a generic countdown
-            // In a full implementation, you'd add a public property to MatchManager
-            timerText.text = "3:00";
+            // Read actual timer from MatchManager
+            float timer;
+            string periodLabel;
+
+            if (matchManager.IsIntermission)
+            {
+                timer = matchManager.IntermissionTimer;
+                periodLabel = "INT";
+            }
+            else
+            {
+                timer = matchManager.PeriodTimer;
+                periodLabel = matchManager.IsOvertime ? "OT" : $"P{matchManager.CurrentPeriod}";
+            }
+
+            int minutes = Mathf.FloorToInt(timer / 60f);
+            int seconds = Mathf.FloorToInt(timer % 60f);
+            timerText.text = $"{periodLabel} {minutes}:{seconds:00}";
         }
         else
         {

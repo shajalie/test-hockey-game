@@ -91,7 +91,10 @@ public class HockeyPlayer : MonoBehaviour
         }
         else
         {
-            Debug.LogError("HockeyPlayer: No base stats assigned!");
+            // Create default stats at runtime if none assigned
+            Debug.LogWarning("[HockeyPlayer] No base stats assigned - creating defaults");
+            baseStats = ScriptableObject.CreateInstance<PlayerStats>();
+            stats = new RuntimeStats(baseStats);
         }
 
         // Initialize stamina

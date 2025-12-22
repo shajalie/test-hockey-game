@@ -145,35 +145,57 @@ public class MatchManager : MonoBehaviour
     {
         Debug.Log("[MatchManager] Setting up match...");
 
-        // Spawn player
-        if (playerPrefab != null && playerSpawnPoint != null)
-        {
-            playerInstance = Instantiate(playerPrefab, playerSpawnPoint.position, playerSpawnPoint.rotation);
-            playerInstance.name = "Player";
+        // Check if TeamManager exists and will handle spawning
+        TeamManager teamManager = FindObjectOfType<TeamManager>();
+        bool useTeamManager = teamManager != null;
 
-            // Connect to InputManager
-            if (InputManager.Instance != null)
+        if (useTeamManager)
+        {
+            Debug.Log("[MatchManager] TeamManager found - deferring player spawning to TeamManager");
+
+            // Get player reference from TeamManager after it spawns
+            StartCoroutine(WaitForTeamManagerPlayers(teamManager));
+        }
+        else
+        {
+            // Legacy 1v1 spawning (fallback if no TeamManager)
+            Debug.Log("[MatchManager] No TeamManager - using legacy 1v1 spawning");
+
+            // Spawn player
+            if (playerPrefab != null && playerSpawnPoint != null)
             {
-                InputManager.Instance.SetControlledPlayer(playerInstance);
+                playerInstance = Instantiate(playerPrefab, playerSpawnPoint.position, playerSpawnPoint.rotation);
+                playerInstance.name = "Player";
+
+                // Connect to InputManager
+                if (InputManager.Instance != null)
+                {
+                    InputManager.Instance.SetControlledPlayer(playerInstance);
+                }
+            }
+
+            // Spawn AI
+            if (aiPrefab != null && opponentSpawnPoint != null)
+            {
+                aiInstance = Instantiate(aiPrefab, opponentSpawnPoint.position, opponentSpawnPoint.rotation);
+                aiInstance.name = "AI_Opponent";
+
+                // Setup AI controller
+                var aiController = aiInstance.GetComponent<AIController>();
+                if (aiController != null)
+                {
+                    aiController.SetGoals(playerGoal?.transform, opponentGoal?.transform);
+                }
             }
         }
 
-        // Spawn AI
-        if (aiPrefab != null && opponentSpawnPoint != null)
+        // Spawn puck if not already in scene
+        if (puckInstance == null)
         {
-            aiInstance = Instantiate(aiPrefab, opponentSpawnPoint.position, opponentSpawnPoint.rotation);
-            aiInstance.name = "AI_Opponent";
-
-            // Setup AI controller
-            var aiController = aiInstance.GetComponent<AIController>();
-            if (aiController != null)
-            {
-                aiController.SetGoals(playerGoal?.transform, opponentGoal?.transform);
-            }
+            puckInstance = FindObjectOfType<Puck>();
         }
 
-        // Spawn puck
-        if (puckPrefab != null && puckSpawnPoint != null)
+        if (puckInstance == null && puckPrefab != null && puckSpawnPoint != null)
         {
             puckInstance = Instantiate(puckPrefab, puckSpawnPoint.position, Quaternion.identity);
             puckInstance.name = "Puck";
@@ -192,6 +214,29 @@ public class MatchManager : MonoBehaviour
         UpdateTimerUI();
     }
 
+    /// <summary>
+    /// Wait for TeamManager to spawn players, then get references.
+    /// </summary>
+    private IEnumerator WaitForTeamManagerPlayers(TeamManager teamManager)
+    {
+        // Wait a frame for TeamManager.Start() to complete spawning
+        yield return null;
+        yield return null;
+
+        // Get controlled player from TeamManager
+        if (teamManager.ControlledPlayer != null)
+        {
+            playerInstance = teamManager.ControlledPlayer;
+            Debug.Log($"[MatchManager] Got controlled player from TeamManager: {playerInstance.name}");
+
+            // Connect to InputManager
+            if (InputManager.Instance != null)
+            {
+                InputManager.Instance.SetControlledPlayer(playerInstance);
+            }
+        }
+    }
+
     // === MATCH FLOW ===
 
     public void StartMatch()
@@ -203,10 +248,20 @@ public class MatchManager : MonoBehaviour
 
         Debug.Log($"[MatchManager] Match state - Running: {isMatchRunning}, Paused: {isPaused}, Time.timeScale: {Time.timeScale}");
 
-        ShowMessage("FACE OFF!", 2f);
-
-        // Do initial faceoff
-        StartCoroutine(DoFaceoff());
+        // Use FaceoffSystem for proper center ice faceoff with countdown
+        FaceoffSystem faceoffSystem = FindObjectOfType<FaceoffSystem>();
+        if (faceoffSystem != null)
+        {
+            Debug.Log("[MatchManager] Using FaceoffSystem for match start faceoff");
+            faceoffSystem.StartFaceoff(); // Center ice, countdown, positioning
+        }
+        else
+        {
+            // Legacy fallback
+            Debug.Log("[MatchManager] No FaceoffSystem - using legacy faceoff");
+            ShowMessage("FACE OFF!", 2f);
+            StartCoroutine(DoFaceoff());
+        }
     }
 
     private void OnMatchStart()
@@ -345,23 +400,39 @@ public class MatchManager : MonoBehaviour
     {
         Debug.Log("[MatchManager] Faceoff...");
 
+        // Try to use FaceoffSystem for proper player positioning
+        FaceoffSystem faceoffSystem = FindObjectOfType<FaceoffSystem>();
+        if (faceoffSystem != null)
+        {
+            Debug.Log("[MatchManager] Using FaceoffSystem for faceoff");
+            Vector3 faceoffPos = puckSpawnPoint != null ? puckSpawnPoint.position : Vector3.zero;
+            faceoffSystem.StartFaceoff(faceoffPos);
+            yield break; // FaceoffSystem handles everything including countdown and GO message
+        }
+
+        // Fallback: Legacy 1v1 faceoff if no FaceoffSystem
+        Debug.Log("[MatchManager] No FaceoffSystem - using legacy faceoff");
+
         // Reset positions
         if (playerInstance != null && playerSpawnPoint != null)
         {
             playerInstance.transform.position = playerSpawnPoint.position;
-            playerInstance.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            Rigidbody rb = playerInstance.GetComponent<Rigidbody>();
+            if (rb != null) rb.linearVelocity = Vector3.zero;
         }
 
         if (aiInstance != null && opponentSpawnPoint != null)
         {
             aiInstance.transform.position = opponentSpawnPoint.position;
-            aiInstance.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            Rigidbody rb = aiInstance.GetComponent<Rigidbody>();
+            if (rb != null) rb.linearVelocity = Vector3.zero;
         }
 
         if (puckInstance != null && puckSpawnPoint != null)
         {
             puckInstance.transform.position = puckSpawnPoint.position;
-            puckInstance.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            Rigidbody rb = puckInstance.GetComponent<Rigidbody>();
+            if (rb != null) rb.linearVelocity = Vector3.zero;
             puckInstance.LosePossession();
         }
 

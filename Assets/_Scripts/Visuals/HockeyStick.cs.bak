@@ -1,0 +1,207 @@
+using UnityEngine;
+
+/// <summary>
+/// Visual hockey stick attached to player.
+/// Uses procedurally generated pixel art sprite.
+/// Animates during shots and puck handling.
+/// </summary>
+public class HockeyStick : MonoBehaviour
+{
+    [Header("Positioning")]
+    [SerializeField] private Vector3 stickOffset = new Vector3(0.3f, 0.2f, 0.2f);
+    [SerializeField] private float stickScale = 1.5f;
+    [SerializeField] private float normalAngle = -30f;
+    [SerializeField] private float shotAngle = 45f;
+
+    [Header("Animation")]
+    [SerializeField] private float shotAnimDuration = 0.2f;
+    [SerializeField] private float windupDuration = 0.3f;
+
+    // Runtime references
+    private SpriteRenderer stickRenderer;
+    private GameObject stickObject;
+    private HockeyPlayer player;
+    private ShootingController shootingController;
+
+    // Animation state
+    private float currentAngle;
+    private float targetAngle;
+    private float animTimer;
+    private bool isAnimating;
+    private bool isWindingUp;
+
+    private void Awake()
+    {
+        player = GetComponentInParent<HockeyPlayer>();
+        shootingController = GetComponentInParent<ShootingController>();
+    }
+
+    private void Start()
+    {
+        CreateStickSprite();
+        currentAngle = normalAngle;
+        targetAngle = normalAngle;
+    }
+
+    private void Update()
+    {
+        UpdateAnimation();
+        UpdateStickPosition();
+
+        // Check for shot charging
+        if (shootingController != null)
+        {
+            CheckShootingState();
+        }
+    }
+
+    /// <summary>
+    /// Creates the stick sprite object.
+    /// </summary>
+    private void CreateStickSprite()
+    {
+        stickObject = new GameObject("StickSprite");
+        stickObject.transform.SetParent(transform);
+        stickObject.transform.localPosition = stickOffset;
+        stickObject.transform.localScale = Vector3.one * stickScale;
+
+        stickRenderer = stickObject.AddComponent<SpriteRenderer>();
+        stickRenderer.sortingOrder = 11; // Above player sprite
+
+        // Generate stick texture
+        Texture2D tex = PixelArtGenerator.GenerateStickSprite();
+        stickRenderer.sprite = Sprite.Create(tex, new Rect(0, 0, 32, 48), new Vector2(0.5f, 0), 32);
+    }
+
+    /// <summary>
+    /// Updates stick position and rotation.
+    /// </summary>
+    private void UpdateStickPosition()
+    {
+        if (stickObject == null) return;
+
+        // Rotate stick based on current angle
+        stickObject.transform.localRotation = Quaternion.Euler(0, 0, currentAngle);
+
+        // Mirror based on player facing direction
+        Rigidbody rb = player?.GetComponent<Rigidbody>();
+        if (rb != null && rb.linearVelocity.x < -0.1f)
+        {
+            stickObject.transform.localPosition = new Vector3(-stickOffset.x, stickOffset.y, stickOffset.z);
+            stickRenderer.flipX = true;
+        }
+        else
+        {
+            stickObject.transform.localPosition = stickOffset;
+            stickRenderer.flipX = false;
+        }
+    }
+
+    /// <summary>
+    /// Updates stick animation.
+    /// </summary>
+    private void UpdateAnimation()
+    {
+        if (!isAnimating) return;
+
+        animTimer -= Time.deltaTime;
+        float duration = isWindingUp ? windupDuration : shotAnimDuration;
+        float t = 1f - (animTimer / duration);
+
+        currentAngle = Mathf.Lerp(
+            isWindingUp ? normalAngle : shotAngle,
+            targetAngle,
+            t
+        );
+
+        if (animTimer <= 0)
+        {
+            currentAngle = targetAngle;
+            isAnimating = false;
+
+            // After shot, return to normal
+            if (!isWindingUp && Mathf.Approximately(targetAngle, shotAngle))
+            {
+                AnimateToAngle(normalAngle, shotAnimDuration * 2f);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks shooting controller state for animation.
+    /// </summary>
+    private void CheckShootingState()
+    {
+        // This would need integration with ShootingController
+        // For now, we'll use public methods called from ShootingController
+    }
+
+    /// <summary>
+    /// Start winding up for a shot.
+    /// </summary>
+    public void StartWindup()
+    {
+        isWindingUp = true;
+        AnimateToAngle(-60f, windupDuration);
+    }
+
+    /// <summary>
+    /// Execute the shot animation.
+    /// </summary>
+    public void ExecuteShot(float power)
+    {
+        isWindingUp = false;
+        float angle = Mathf.Lerp(30f, 60f, power);
+        AnimateToAngle(angle, shotAnimDuration);
+    }
+
+    /// <summary>
+    /// Cancel shot and return to normal.
+    /// </summary>
+    public void CancelShot()
+    {
+        isWindingUp = false;
+        AnimateToAngle(normalAngle, windupDuration);
+    }
+
+    /// <summary>
+    /// Animate stick to target angle.
+    /// </summary>
+    private void AnimateToAngle(float angle, float duration)
+    {
+        targetAngle = angle;
+        animTimer = duration;
+        isAnimating = true;
+    }
+
+    /// <summary>
+    /// Quick stick movement for puck handling.
+    /// </summary>
+    public void PuckHandleAnim()
+    {
+        // Quick back-and-forth
+        StartCoroutine(PuckHandleRoutine());
+    }
+
+    private System.Collections.IEnumerator PuckHandleRoutine()
+    {
+        float originalAngle = currentAngle;
+
+        // Quick movements
+        AnimateToAngle(normalAngle - 15f, 0.1f);
+        yield return new WaitForSeconds(0.1f);
+
+        AnimateToAngle(normalAngle + 15f, 0.1f);
+        yield return new WaitForSeconds(0.1f);
+
+        AnimateToAngle(originalAngle, 0.1f);
+    }
+
+    private void OnDestroy()
+    {
+        if (stickRenderer != null && stickRenderer.sprite != null && stickRenderer.sprite.texture != null)
+        {
+            Destroy(stickRenderer.sprite.texture);
+        }
+    }
+}

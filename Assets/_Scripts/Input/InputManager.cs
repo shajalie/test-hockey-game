@@ -55,6 +55,12 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
+        // Ensure inputActions exists (may be null if singleton was destroyed)
+        if (inputActions == null)
+        {
+            inputActions = new HockeyInput();
+        }
+
         inputActions.Enable();
 
         // Subscribe to input events

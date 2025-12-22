@@ -32,6 +32,9 @@ public class RinkBuilder : MonoBehaviour
     [SerializeField] private Goal homeGoal;
     [SerializeField] private Goal awayGoal;
 
+    [Header("Auto Build")]
+    [SerializeField] private bool buildOnStart = true;
+
     // Properties
     public float Length => length;
     public float Width => width;
@@ -40,6 +43,14 @@ public class RinkBuilder : MonoBehaviour
     public Vector3 CenterIce => Vector3.zero;
     public Vector3 HomeGoalPosition => new Vector3(-length / 2f + goalDepth, 0, 0);
     public Vector3 AwayGoalPosition => new Vector3(length / 2f - goalDepth, 0, 0);
+
+    private void Start()
+    {
+        if (buildOnStart && rinkRoot == null)
+        {
+            BuildRink();
+        }
+    }
 
     [ContextMenu("Build Rink")]
     public void BuildRink()
@@ -62,6 +73,7 @@ public class RinkBuilder : MonoBehaviour
         CreateBoards();
         CreateGoals();
         CreateSpawnPoints();
+        CreateInvisibleBoundaries();
 
         Debug.Log("[RinkBuilder] Rink built successfully!");
     }
@@ -275,6 +287,7 @@ public class RinkBuilder : MonoBehaviour
         crossbar.transform.localRotation = Quaternion.Euler(0, 0, 90);
         crossbar.transform.localScale = new Vector3(0.05f, goalWidth / 2f, 0.05f);
         ApplyGoalMaterial(crossbar);
+        ApplyGoalPostPhysics(crossbar);
 
         // Posts
         GameObject leftPost = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -283,6 +296,7 @@ public class RinkBuilder : MonoBehaviour
         leftPost.transform.localPosition = new Vector3(0, goalHeight / 2f, goalWidth / 2f);
         leftPost.transform.localScale = new Vector3(0.05f, goalHeight / 2f, 0.05f);
         ApplyGoalMaterial(leftPost);
+        ApplyGoalPostPhysics(leftPost);
 
         GameObject rightPost = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         rightPost.name = "RightPost";
@@ -290,6 +304,10 @@ public class RinkBuilder : MonoBehaviour
         rightPost.transform.localPosition = new Vector3(0, goalHeight / 2f, -goalWidth / 2f);
         rightPost.transform.localScale = new Vector3(0.05f, goalHeight / 2f, 0.05f);
         ApplyGoalMaterial(rightPost);
+        ApplyGoalPostPhysics(rightPost);
+
+        // Back of net (visual netting + collision)
+        CreateGoalNetting(goal.transform);
 
         // Goal trigger zone
         GameObject trigger = new GameObject("GoalTrigger");
@@ -322,6 +340,68 @@ public class RinkBuilder : MonoBehaviour
             }
             renderer.sharedMaterial = _goalMaterial;
         }
+    }
+
+    private void ApplyGoalPostPhysics(GameObject obj)
+    {
+        // Create bouncy physics material for posts (PING!)
+        PhysicsMaterial postMaterial = new PhysicsMaterial("GoalPost");
+        postMaterial.bounciness = 0.8f;
+        postMaterial.dynamicFriction = 0.3f;
+        postMaterial.staticFriction = 0.3f;
+        postMaterial.bounceCombine = PhysicsMaterialCombine.Maximum;
+
+        var collider = obj.GetComponent<Collider>();
+        if (collider != null)
+        {
+            collider.material = postMaterial;
+        }
+
+        obj.layer = LayerMask.NameToLayer("Wall");
+        obj.tag = "GoalPost";
+    }
+
+    private void CreateGoalNetting(Transform goalTransform)
+    {
+        GameObject netting = new GameObject("Netting");
+        netting.transform.SetParent(goalTransform);
+        netting.transform.localPosition = Vector3.zero;
+
+        // Back panel of net
+        GameObject backNet = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        backNet.name = "BackNet";
+        backNet.transform.SetParent(netting.transform);
+        backNet.transform.localPosition = new Vector3(goalDepth, goalHeight / 2f, 0);
+        backNet.transform.localScale = new Vector3(0.1f, goalHeight, goalWidth);
+
+        var backCollider = backNet.GetComponent<BoxCollider>();
+        backCollider.material = boardsMaterial;
+        backNet.layer = LayerMask.NameToLayer("Wall");
+
+        // Make netting semi-transparent white
+        var renderer = backNet.GetComponent<MeshRenderer>();
+        Material netMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        netMat.color = new Color(1f, 1f, 1f, 0.5f);
+        renderer.sharedMaterial = netMat;
+
+        // Side panels
+        GameObject leftNet = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        leftNet.name = "LeftNet";
+        leftNet.transform.SetParent(netting.transform);
+        leftNet.transform.localPosition = new Vector3(goalDepth / 2f, goalHeight / 2f, goalWidth / 2f);
+        leftNet.transform.localScale = new Vector3(goalDepth, goalHeight, 0.1f);
+        leftNet.GetComponent<BoxCollider>().material = boardsMaterial;
+        leftNet.layer = LayerMask.NameToLayer("Wall");
+        leftNet.GetComponent<MeshRenderer>().sharedMaterial = netMat;
+
+        GameObject rightNet = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        rightNet.name = "RightNet";
+        rightNet.transform.SetParent(netting.transform);
+        rightNet.transform.localPosition = new Vector3(goalDepth / 2f, goalHeight / 2f, -goalWidth / 2f);
+        rightNet.transform.localScale = new Vector3(goalDepth, goalHeight, 0.1f);
+        rightNet.GetComponent<BoxCollider>().material = boardsMaterial;
+        rightNet.layer = LayerMask.NameToLayer("Wall");
+        rightNet.GetComponent<MeshRenderer>().sharedMaterial = netMat;
     }
 
     private void CreateSpawnPoints()
@@ -357,6 +437,61 @@ public class RinkBuilder : MonoBehaviour
         {
             spawn.transform.localRotation = Quaternion.Euler(0, -90, 0);
         }
+    }
+
+    /// <summary>
+    /// Creates invisible boundary walls to prevent players/puck from escaping.
+    /// </summary>
+    private void CreateInvisibleBoundaries()
+    {
+        GameObject boundaries = new GameObject("InvisibleBoundaries");
+        boundaries.transform.SetParent(rinkRoot.transform);
+
+        float boundaryHeight = 10f; // Tall invisible walls
+        float boundaryThickness = 2f;
+        float extraMargin = 3f; // Extra space beyond boards
+
+        // Invisible walls around entire rink (taller than visible boards)
+        // North wall
+        CreateInvisibleWall(boundaries.transform, "BoundaryNorth",
+            new Vector3(0, boundaryHeight / 2f, width / 2f + extraMargin),
+            new Vector3(length + extraMargin * 2, boundaryHeight, boundaryThickness));
+
+        // South wall
+        CreateInvisibleWall(boundaries.transform, "BoundarySouth",
+            new Vector3(0, boundaryHeight / 2f, -width / 2f - extraMargin),
+            new Vector3(length + extraMargin * 2, boundaryHeight, boundaryThickness));
+
+        // East wall (behind away goal)
+        CreateInvisibleWall(boundaries.transform, "BoundaryEast",
+            new Vector3(length / 2f + extraMargin, boundaryHeight / 2f, 0),
+            new Vector3(boundaryThickness, boundaryHeight, width + extraMargin * 2));
+
+        // West wall (behind home goal)
+        CreateInvisibleWall(boundaries.transform, "BoundaryWest",
+            new Vector3(-length / 2f - extraMargin, boundaryHeight / 2f, 0),
+            new Vector3(boundaryThickness, boundaryHeight, width + extraMargin * 2));
+
+        // Floor boundary (in case something falls through)
+        CreateInvisibleWall(boundaries.transform, "BoundaryFloor",
+            new Vector3(0, -2f, 0),
+            new Vector3(length + extraMargin * 4, 1f, width + extraMargin * 4));
+
+        Debug.Log("[RinkBuilder] Invisible boundaries created");
+    }
+
+    private void CreateInvisibleWall(Transform parent, string name, Vector3 position, Vector3 size)
+    {
+        GameObject wall = new GameObject(name);
+        wall.transform.SetParent(parent);
+        wall.transform.localPosition = position;
+
+        BoxCollider collider = wall.AddComponent<BoxCollider>();
+        collider.size = size;
+        collider.material = boardsMaterial;
+
+        wall.layer = LayerMask.NameToLayer("Wall");
+        wall.tag = "Wall";
     }
 
     // === UTILITY ===

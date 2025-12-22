@@ -587,7 +587,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -840,7 +840,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -878,12 +878,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c174a3663eba20a4598bf1ebe8377e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Puck
-  magnetForce: 8
-  magnetRange: 1.5
-  knockLooseThreshold: 5
+  iceFriction: 0.98
   maxSpeed: 50
-  possessionCooldown: 0.3
+  boardBounciness: 0.65
+  minBounceSpeed: 2
+  magnetRange: 1.5
+  magnetForce: 8
+  velocityMatchStrength: 0.5
+  maxPossessionDistance: 2.5
+  shotPowerMultiplier: 1.2
+  maxShotSpeed: 55
+  shotReleaseDelay: 0.15
+  passPowerMultiplier: 0.8
+  passArcHeight: 0.1
+  passAccuracy: 0.95
+  possessionPickupCooldown: 0.25
+  knockLooseThreshold: 5
+  maxAssistTracking: 3
+  enablePossessionEffects: 1
+  possessedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  looseColor: {r: 1, g: 1, b: 1, a: 1}
   showDebugGizmos: 1
+  logPossessionChanges: 1
 --- !u!54 &89563092
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1153,7 +1169,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -1294,7 +1310,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.9, g: 0.95, b: 1, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.9, g: 0.95, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -1614,7 +1630,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -1898,7 +1914,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -2039,7 +2055,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -2180,7 +2196,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -2485,7 +2501,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -2738,7 +2754,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -2982,6 +2998,96 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1001 &431263510
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 654898850013013373, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_Name
+      value: HockeySkater
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5919519852126082784, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 654898850013013373, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 431263512}
+  m_SourcePrefab: {fileID: 100100000, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+--- !u!1 &431263511 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 654898850013013373, guid: 95829ab2fe6c848418669c8ff37f99f7, type: 3}
+  m_PrefabInstance: {fileID: 431263510}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &431263512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431263511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7945ae57749367f49acb4e8e13c1f371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPixelArt
+  spriteScale: 2
+  spriteYOffset: 0.5
+  billboardToCamera: 1
+  hideMeshRenderer: 1
+  createStickSprite: 1
+  stickOffset: {x: 0.4, y: 0.2, z: 0}
+  stickScale: 1.2
+  homeTeamColor:
+    serializedVersion: 2
+    rgba: 4293289523
+  awayTeamColor:
+    serializedVersion: 2
+    rgba: 4281545702
 --- !u!1 &441386866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3493,7 +3599,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -3746,7 +3852,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -4200,7 +4306,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -4380,7 +4486,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -4560,7 +4666,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -4701,7 +4807,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -4875,7 +4981,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -5016,11 +5122,62 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!1 &667996541
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 667996543}
+  - component: {fileID: 667996542}
+  m_Layer: 0
+  m_Name: Referee
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &667996542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667996541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 587211ea25c55ca47bf5f9a75f8b34ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Referee
+  whistleClip: {fileID: 0}
+  whistleVolume: 0.8
+  moveSpeed: 8
+  followDistance: 15
+  faceoffDistance: 3
+  spriteScale: 2
+  spriteYOffset: 0.5
+--- !u!4 &667996543
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667996541}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &738741212
 GameObject:
   m_ObjectHideFlags: 0
@@ -5414,7 +5571,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -5449,7 +5606,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchManager
   goalsToWin: 3
-  matchTimeLimit: 180
+  periodLength: 300
+  intermissionLength: 30
+  overtimeLength: 300
   faceoffDelay: 2
   playerSpawnPoint: {fileID: 797300269}
   opponentSpawnPoint: {fileID: 172881209}
@@ -6442,7 +6601,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -6728,6 +6887,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HockeyPlayer
   baseStats: {fileID: 11400000, guid: 8b119356bdadbbd47a70aa3e352abf3a, type: 2}
   stickTip: {fileID: 2104656477}
+  maxStamina: 100
+  staminaDrainRate: 15
+  staminaRegenRate: 35
+  minStaminaToSprint: 5
+  teamId: 0
+  position: 3
   showDebugGizmos: 1
 --- !u!136 &1025629180
 CapsuleCollider:
@@ -7079,7 +7244,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -7220,7 +7385,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -7486,7 +7651,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -7739,11 +7904,101 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!1001 &1118732014
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6784048840110297999, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_Name
+      value: HockeyGoalie
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011633360789786469, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6784048840110297999, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1118732016}
+  m_SourcePrefab: {fileID: 100100000, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+--- !u!1 &1118732015 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6784048840110297999, guid: b5025e1cecfa8f34894f4b01db29dcd2, type: 3}
+  m_PrefabInstance: {fileID: 1118732014}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1118732016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1118732015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7945ae57749367f49acb4e8e13c1f371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPixelArt
+  spriteScale: 2
+  spriteYOffset: 0.5
+  billboardToCamera: 1
+  hideMeshRenderer: 1
+  createStickSprite: 1
+  stickOffset: {x: 0.4, y: 0.2, z: 0}
+  stickScale: 1.2
+  homeTeamColor:
+    serializedVersion: 2
+    rgba: 4293289523
+  awayTeamColor:
+    serializedVersion: 2
+    rgba: 4281545702
 --- !u!1 &1122812234
 GameObject:
   m_ObjectHideFlags: 0
@@ -8328,7 +8583,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -8645,7 +8900,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -8786,7 +9041,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -9039,7 +9294,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -9211,7 +9466,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -9688,11 +9943,65 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!1 &1475770176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1475770178}
+  - component: {fileID: 1475770177}
+  m_Layer: 0
+  m_Name: GameHUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1475770177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475770176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7de2c2f431ddc47b5b2bcc329d0a8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameHUD
+  hudCanvas: {fileID: 0}
+  gameManager: {fileID: 0}
+  matchManager: {fileID: 0}
+  teamManager: {fileID: 0}
+  autoCreateUI: 1
+  canvasSortOrder: 100
+  showDebugInfo: 0
+  shotPowerDisplayTime: 2
+  goalCelebrationTime: 3
+  faceoffIndicatorTime: 2
+--- !u!4 &1475770178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475770176}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!21 &1488077675
 Material:
   serializedVersion: 8
@@ -9829,7 +10138,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -10084,7 +10393,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -10373,11 +10682,70 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!1 &1587219873
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1587219875}
+  - component: {fileID: 1587219874}
+  m_Layer: 0
+  m_Name: TeamManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1587219874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587219873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1410b250d7f30e498e2e3f86cb64607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeamManager
+  homeTeamData: {fileID: 0}
+  awayTeamData: {fileID: 0}
+  homeSpawnRoot: {fileID: 0}
+  awaySpawnRoot: {fileID: 0}
+  homeGoalTransform: {fileID: 0}
+  awayGoalTransform: {fileID: 0}
+  allowPlayerSwitching: 1
+  switchCooldown: 0.5
+  autoSwitchDistance: 5
+  enableLineChanges: 1
+  staminaDrainRate: 1
+  staminaRegenRate: 2
+  lineChangeTime: 2
+  showDebugGizmos: 1
+  showTeamStats: 1
+--- !u!4 &1587219875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587219873}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!21 &1593094001
 Material:
   serializedVersion: 8
@@ -10514,7 +10882,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -10879,7 +11247,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -11244,7 +11612,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -11385,7 +11753,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -11750,7 +12118,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -11803,6 +12171,7 @@ MonoBehaviour:
   teamIndex: 0
   goalEffect: {fileID: 0}
   goalSound: {fileID: 0}
+  goalCelebrationTime: 3
 --- !u!65 &1913018604
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11960,7 +12329,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -12101,7 +12470,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -12667,7 +13036,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -12808,7 +13177,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -13173,7 +13542,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -13314,7 +13683,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -13567,7 +13936,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.2, b: 0.3, a: 1}
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.19999996, g: 0.19999996, b: 0.29999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -13617,9 +13986,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e782ecb16001dfe42a1ba36e642650b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Goal
-  teamIndex: 0
+  teamIndex: 1
   goalEffect: {fileID: 0}
   goalSound: {fileID: 0}
+  goalCelebrationTime: 3
 --- !u!65 &2091661274
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13863,6 +14233,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1025629182}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2117193169
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2117193171}
+  - component: {fileID: 2117193170}
+  m_Layer: 0
+  m_Name: FaceoffSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2117193170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117193169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd581251505f2b64ea8eb7d9da1d037f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FaceoffSystem
+  centerIcePosition: {x: 0, y: 0, z: 0}
+  homeLeftCircle: {x: -15, y: 0, z: 7}
+  homeRightCircle: {x: -15, y: 0, z: -7}
+  awayLeftCircle: {x: 15, y: 0, z: 7}
+  awayRightCircle: {x: 15, y: 0, z: -7}
+  faceoffCircleRadius: 4.5
+  playerSpacing: 1
+  countdownDuration: 3
+  dropDelay: 0.5
+  puckDropHeight: 0.5
+  puckDropRandomness: 0.3
+  playerDetectionRadius: 10
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  showCircleHighlight: 1
+  circleHighlightColor: {r: 1, g: 1, b: 0, a: 0.3}
+  circlePulseSpeed: 2
+  faceoffCirclePrefab: {fileID: 0}
+  countdownText: {fileID: 0}
+  faceoffCanvas: {fileID: 0}
+  rinkBuilder: {fileID: 0}
+  matchManager: {fileID: 0}
+  puck: {fileID: 0}
+  referee: {fileID: 0}
+--- !u!4 &2117193171
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117193169}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2138058744
 GameObject:
   m_ObjectHideFlags: 0
@@ -13932,12 +14371,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AIController
   opponentGoal: {fileID: 1913018602}
   ownGoal: {fileID: 2091661272}
-  homePosition: {fileID: 0}
+  homePositionTransform: {fileID: 0}
+  puck: {fileID: 0}
+  rinkBuilder: {fileID: 0}
+  teamManagerRef: {fileID: 0}
   reactionTime: 0.2
   shootingRange: 10
   defendDistance: 8
   chaseSpeed: 0.9
   shootAccuracy: 0.8
+  passRange: 20
+  passConsiderationChance: 0.7
+  supportDistance: 8
+  positionTolerance: 3
+  teammateSearchRadius: 30
+  forwardAggressionRange: 20
+  defensemanMaxForwardPosition: 10
+  defensemanFallbackDistance: 15
   showDebugGizmos: 1
   currentState: 0
 --- !u!114 &2139231603
@@ -13970,6 +14420,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HockeyPlayer
   baseStats: {fileID: 11400000, guid: 8b119356bdadbbd47a70aa3e352abf3a, type: 2}
   stickTip: {fileID: 234470749}
+  maxStamina: 100
+  staminaDrainRate: 15
+  staminaRegenRate: 35
+  minStaminaToSprint: 5
+  teamId: 0
+  position: 3
   showDebugGizmos: 1
 --- !u!136 &2139231605
 CapsuleCollider:
@@ -14054,3 +14510,9 @@ SceneRoots:
   - {fileID: 89563096}
   - {fileID: 8666222}
   - {fileID: 2104529283}
+  - {fileID: 1587219875}
+  - {fileID: 2117193171}
+  - {fileID: 1475770178}
+  - {fileID: 667996543}
+  - {fileID: 431263510}
+  - {fileID: 1118732014}

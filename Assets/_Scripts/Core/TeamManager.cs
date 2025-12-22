@@ -55,7 +55,224 @@ public class TeamManager : MonoBehaviour
 
     private void Awake()
     {
+        AutoConfigureIfNeeded();
         InitializeTeams();
+    }
+
+    /// <summary>
+    /// Auto-configure team data, spawn points, and prefabs if not assigned in Inspector.
+    /// This allows the game to work without manual setup.
+    /// </summary>
+    private void AutoConfigureIfNeeded()
+    {
+        // Auto-create TeamData if not assigned
+        if (homeTeamData == null)
+        {
+            homeTeamData = ScriptableObject.CreateInstance<TeamData>();
+            homeTeamData.teamName = "Home Team";
+            homeTeamData.abbreviation = "HOM";
+            homeTeamData.primaryColor = new Color(0.2f, 0.4f, 0.9f); // Blue
+            homeTeamData.secondaryColor = Color.white;
+            homeTeamData.skatersOnIce = 5;
+            homeTeamData.aiDifficulty = 0.5f;
+            Debug.Log("[TeamManager] Created default home team data");
+        }
+
+        if (awayTeamData == null)
+        {
+            awayTeamData = ScriptableObject.CreateInstance<TeamData>();
+            awayTeamData.teamName = "Away Team";
+            awayTeamData.abbreviation = "AWY";
+            awayTeamData.primaryColor = new Color(0.9f, 0.2f, 0.2f); // Red
+            awayTeamData.secondaryColor = Color.white;
+            awayTeamData.skatersOnIce = 5;
+            awayTeamData.aiDifficulty = 0.5f;
+            Debug.Log("[TeamManager] Created default away team data");
+        }
+
+        // Auto-find or create spawn roots
+        if (homeSpawnRoot == null)
+        {
+            GameObject homeRoot = GameObject.Find("HomeTeamSpawn");
+            if (homeRoot == null)
+            {
+                homeRoot = new GameObject("HomeTeamSpawn");
+                homeRoot.transform.position = new Vector3(-15f, 0f, 0f);
+            }
+            homeSpawnRoot = homeRoot.transform;
+            Debug.Log("[TeamManager] Auto-configured home spawn root");
+        }
+
+        if (awaySpawnRoot == null)
+        {
+            GameObject awayRoot = GameObject.Find("AwayTeamSpawn");
+            if (awayRoot == null)
+            {
+                awayRoot = new GameObject("AwayTeamSpawn");
+                awayRoot.transform.position = new Vector3(15f, 0f, 0f);
+            }
+            awaySpawnRoot = awayRoot.transform;
+            Debug.Log("[TeamManager] Auto-configured away spawn root");
+        }
+
+        // Auto-find goals by TeamIndex - look for Goal components (not GoalTrigger)
+        if (homeGoalTransform == null || awayGoalTransform == null)
+        {
+            Goal[] goals = FindObjectsOfType<Goal>();
+            foreach (var goal in goals)
+            {
+                if (goal.TeamIndex == 0 && homeGoalTransform == null)
+                {
+                    // Home goal is where home team defends (left side, x=-29)
+                    homeGoalTransform = goal.transform;
+                    Debug.Log($"[TeamManager] Auto-found home goal at {goal.transform.position}");
+                }
+                else if (goal.TeamIndex == 1 && awayGoalTransform == null)
+                {
+                    // Away goal is where away team defends (right side, x=29)
+                    awayGoalTransform = goal.transform;
+                    Debug.Log($"[TeamManager] Auto-found away goal at {goal.transform.position}");
+                }
+            }
+
+            // Fallback: If goals weren't found by TeamIndex, use position-based detection
+            if ((homeGoalTransform == null || awayGoalTransform == null) && goals.Length >= 2)
+            {
+                Debug.LogWarning("[TeamManager] Goals not found by TeamIndex, using position-based detection");
+                foreach (var goal in goals)
+                {
+                    if (goal.transform.position.x < 0 && homeGoalTransform == null)
+                    {
+                        homeGoalTransform = goal.transform;
+                        Debug.Log($"[TeamManager] Position-based: home goal at {goal.transform.position}");
+                    }
+                    else if (goal.transform.position.x > 0 && awayGoalTransform == null)
+                    {
+                        awayGoalTransform = goal.transform;
+                        Debug.Log($"[TeamManager] Position-based: away goal at {goal.transform.position}");
+                    }
+                }
+            }
+        }
+
+        // Auto-load prefabs - try multiple methods
+        if (homeTeamData.skaterPrefab == null)
+        {
+            // Method 1: Try Resources folder
+            homeTeamData.skaterPrefab = Resources.Load<GameObject>("HockeySkater");
+
+            // Method 2: Try to load from AssetDatabase (Editor only)
+#if UNITY_EDITOR
+            if (homeTeamData.skaterPrefab == null)
+            {
+                homeTeamData.skaterPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/HockeySkater.prefab");
+                if (homeTeamData.skaterPrefab != null)
+                {
+                    Debug.Log("[TeamManager] Loaded HockeySkater from AssetDatabase");
+                }
+            }
+#endif
+
+            // Method 3: Create default prefab
+            if (homeTeamData.skaterPrefab == null)
+            {
+                homeTeamData.skaterPrefab = CreateDefaultSkaterPrefab();
+            }
+        }
+
+        if (homeTeamData.goaliePrefab == null)
+        {
+            // Method 1: Try Resources folder
+            homeTeamData.goaliePrefab = Resources.Load<GameObject>("HockeyGoalie");
+
+            // Method 2: Try to load from AssetDatabase (Editor only)
+#if UNITY_EDITOR
+            if (homeTeamData.goaliePrefab == null)
+            {
+                homeTeamData.goaliePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/HockeyGoalie.prefab");
+                if (homeTeamData.goaliePrefab != null)
+                {
+                    Debug.Log("[TeamManager] Loaded HockeyGoalie from AssetDatabase");
+                }
+            }
+#endif
+
+            // Method 3: Create default prefab
+            if (homeTeamData.goaliePrefab == null)
+            {
+                homeTeamData.goaliePrefab = CreateDefaultGoaliePrefab();
+            }
+        }
+
+        // Share prefabs with away team
+        if (awayTeamData.skaterPrefab == null)
+        {
+            awayTeamData.skaterPrefab = homeTeamData.skaterPrefab;
+        }
+        if (awayTeamData.goaliePrefab == null)
+        {
+            awayTeamData.goaliePrefab = homeTeamData.goaliePrefab;
+        }
+    }
+
+    /// <summary>
+    /// Create a basic skater prefab at runtime if none exists.
+    /// </summary>
+    private GameObject CreateDefaultSkaterPrefab()
+    {
+        GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        prefab.name = "DefaultSkater";
+        prefab.transform.localScale = new Vector3(0.8f, 1f, 0.8f);
+
+        // Add required components
+        if (prefab.GetComponent<HockeyPlayer>() == null)
+            prefab.AddComponent<HockeyPlayer>();
+        if (prefab.GetComponent<AIController>() == null)
+            prefab.AddComponent<AIController>();
+        if (prefab.GetComponent<TeamColorApplier>() == null)
+            prefab.AddComponent<TeamColorApplier>();
+
+        // Configure rigidbody
+        Rigidbody rb = prefab.GetComponent<Rigidbody>();
+        if (rb == null) rb = prefab.AddComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.mass = 80f;
+
+        prefab.SetActive(false); // Deactivate template
+        DontDestroyOnLoad(prefab);
+
+        Debug.Log("[TeamManager] Created default skater prefab");
+        return prefab;
+    }
+
+    /// <summary>
+    /// Create a basic goalie prefab at runtime if none exists.
+    /// </summary>
+    private GameObject CreateDefaultGoaliePrefab()
+    {
+        GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        prefab.name = "DefaultGoalie";
+        prefab.transform.localScale = new Vector3(1f, 1.2f, 1f); // Slightly larger
+
+        // Add required components
+        HockeyPlayer player = prefab.AddComponent<HockeyPlayer>();
+        // Note: HockeyPlayer should have IsGoalie property
+        if (prefab.GetComponent<GoalieController>() == null)
+            prefab.AddComponent<GoalieController>();
+        if (prefab.GetComponent<TeamColorApplier>() == null)
+            prefab.AddComponent<TeamColorApplier>();
+
+        // Configure rigidbody
+        Rigidbody rb = prefab.GetComponent<Rigidbody>();
+        if (rb == null) rb = prefab.AddComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.mass = 100f;
+
+        prefab.SetActive(false); // Deactivate template
+        DontDestroyOnLoad(prefab);
+
+        Debug.Log("[TeamManager] Created default goalie prefab");
+        return prefab;
     }
 
     private void Start()
@@ -191,18 +408,45 @@ public class TeamManager : MonoBehaviour
 
         // Configure AI if not goalie and not player-controlled team
         AIController ai = playerObj.GetComponent<AIController>();
-        if (ai != null && !team.IsPlayerControlled)
+        if (ai != null)
         {
-            ai.SetDifficulty(team.Data.aiDifficulty);
+            // Set goals for all AI (even if disabled, in case they get re-enabled)
             ai.SetGoals(
                 defendingLeftSide ? awayGoalTransform : homeGoalTransform,
                 defendingLeftSide ? homeGoalTransform : awayGoalTransform
             );
+
+            // Set home position for all AI
+            ai.SetHomePosition(spawnPosition);
+
+            if (!team.IsPlayerControlled)
+            {
+                ai.SetDifficulty(team.Data.aiDifficulty);
+            }
+            else
+            {
+                // Disable AI for player-controlled team (except when not controlling this player)
+                ai.enabled = false;
+            }
         }
-        else if (ai != null && team.IsPlayerControlled)
+
+        // Set team ID and position on HockeyPlayer
+        player.SetTeam(team.TeamIndex);
+        player.SetPosition(position);
+
+        // Add TeamColorApplier if not present and apply team color
+        TeamColorApplier colorApplier = playerObj.GetComponent<TeamColorApplier>();
+        if (colorApplier == null)
         {
-            // Disable AI for player-controlled team (except when not controlling this player)
-            ai.enabled = false;
+            colorApplier = playerObj.AddComponent<TeamColorApplier>();
+        }
+        colorApplier.SetTeam(team.TeamIndex, position == PlayerPosition.Goalie);
+
+        // Add PlayerPixelArt for 64x64 isometric sprites
+        PlayerPixelArt pixelArt = playerObj.GetComponent<PlayerPixelArt>();
+        if (pixelArt == null)
+        {
+            pixelArt = playerObj.AddComponent<PlayerPixelArt>();
         }
 
         // Create team player info

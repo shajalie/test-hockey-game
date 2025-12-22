@@ -26,10 +26,14 @@ public class AIController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform opponentGoal;
     [SerializeField] private Transform ownGoal;
-    [SerializeField] private Transform homePosition;
+    [SerializeField] private Transform homePositionTransform; // Optional - use Transform reference
     [SerializeField] private Puck puck;
     [SerializeField] private RinkBuilder rinkBuilder;
     [SerializeField] private TeamManager teamManagerRef;
+
+    // Home position can be set as Vector3 directly (preferred by TeamManager)
+    private Vector3 homePositionPoint;
+    private bool hasHomePosition = false;
 
     [Header("AI Settings")]
     [SerializeField] private float reactionTime = 0.2f;
@@ -616,7 +620,7 @@ public class AIController : MonoBehaviour
 
     private void ExecuteReturn()
     {
-        Vector3 targetPos = homePosition != null ? homePosition.position : Vector3.zero;
+        Vector3 targetPos = GetHomePosition();
         Vector3 toHome = targetPos - transform.position;
         toHome.y = 0;
 
@@ -629,6 +633,50 @@ public class AIController : MonoBehaviour
         {
             player.SetMoveInput(Vector2.zero);
         }
+    }
+
+    /// <summary>
+    /// Get the home position for this AI. Uses Vector3 if set, Transform if available, or calculates default.
+    /// </summary>
+    private Vector3 GetHomePosition()
+    {
+        // Priority 1: Directly set Vector3 position (from TeamManager)
+        if (hasHomePosition)
+        {
+            return homePositionPoint;
+        }
+
+        // Priority 2: Transform reference (from Inspector)
+        if (homePositionTransform != null)
+        {
+            return homePositionTransform.position;
+        }
+
+        // Priority 3: Calculate default position based on player role and goal position
+        if (ownGoal != null)
+        {
+            Vector3 basePos = ownGoal.position;
+            float forwardOffset = 10f; // Distance from goal
+
+            switch (player.Position)
+            {
+                case PlayerPosition.Goalie:
+                    return basePos; // Goalie stays at goal
+                case PlayerPosition.LeftDefense:
+                    return basePos + Vector3.right * forwardOffset + Vector3.forward * -4f;
+                case PlayerPosition.RightDefense:
+                    return basePos + Vector3.right * forwardOffset + Vector3.forward * 4f;
+                case PlayerPosition.Center:
+                    return basePos + Vector3.right * (forwardOffset * 2f);
+                case PlayerPosition.LeftWing:
+                    return basePos + Vector3.right * (forwardOffset * 2f) + Vector3.forward * -8f;
+                case PlayerPosition.RightWing:
+                    return basePos + Vector3.right * (forwardOffset * 2f) + Vector3.forward * 8f;
+            }
+        }
+
+        // Last resort: center ice
+        return Vector3.zero;
     }
 
     private void ExecuteSupport()
@@ -907,11 +955,25 @@ public class AIController : MonoBehaviour
     }
 
     /// <summary>
-    /// Set home position for this AI (called by TeamManager).
+    /// Set home position for this AI using a Transform reference.
     /// </summary>
     public void SetHomePosition(Transform position)
     {
-        homePosition = position;
+        homePositionTransform = position;
+        if (position != null)
+        {
+            homePositionPoint = position.position;
+            hasHomePosition = true;
+        }
+    }
+
+    /// <summary>
+    /// Set home position for this AI using a Vector3 (called by TeamManager).
+    /// </summary>
+    public void SetHomePosition(Vector3 position)
+    {
+        homePositionPoint = position;
+        hasHomePosition = true;
     }
 
     #endregion
@@ -967,11 +1029,12 @@ public class AIController : MonoBehaviour
         }
 
         // Draw home position
-        if (homePosition != null)
+        if (hasHomePosition || homePositionTransform != null)
         {
+            Vector3 homePos = GetHomePosition();
             Gizmos.color = new Color(0f, 1f, 0f, 0.5f);
-            Gizmos.DrawLine(transform.position, homePosition.position);
-            Gizmos.DrawWireSphere(homePosition.position, 0.5f);
+            Gizmos.DrawLine(transform.position, homePos);
+            Gizmos.DrawWireSphere(homePos, 0.5f);
         }
 
         // Draw pass target

@@ -42,6 +42,7 @@ public class FaceoffSystem : MonoBehaviour
     [SerializeField] private RinkBuilder rinkBuilder;
     [SerializeField] private MatchManager matchManager;
     [SerializeField] private Puck puck;
+    [SerializeField] private Referee referee;
 
     // Faceoff state
     private FaceoffState currentState = FaceoffState.InPlay;
@@ -83,6 +84,9 @@ public class FaceoffSystem : MonoBehaviour
 
         if (puck == null)
             puck = FindObjectOfType<Puck>();
+
+        if (referee == null)
+            referee = FindObjectOfType<Referee>();
 
         // Initialize faceoff positions relative to rink if RinkBuilder exists
         if (rinkBuilder != null)
@@ -181,6 +185,12 @@ public class FaceoffSystem : MonoBehaviour
         FindPlayers();
         PositionPlayersForFaceoff();
 
+        // Position referee at faceoff circle
+        if (referee != null)
+        {
+            referee.MoveToFaceoffCircle(currentFaceoffPosition);
+        }
+
         // Show circle indicator
         if (showCircleHighlight)
         {
@@ -191,7 +201,19 @@ public class FaceoffSystem : MonoBehaviour
 
         // State: Ready
         currentState = FaceoffState.Ready;
-        yield return new WaitForSeconds(0.5f);
+
+        // Wait for referee to be in position
+        if (referee != null)
+        {
+            float waitTime = 0f;
+            while (!referee.IsAtFaceoff && waitTime < 2f)
+            {
+                waitTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        yield return new WaitForSeconds(0.3f);
 
         // State: Countdown
         currentState = FaceoffState.Countdown;
@@ -212,6 +234,12 @@ public class FaceoffSystem : MonoBehaviour
         // State: Drop
         currentState = FaceoffState.Drop;
         ShowCountdownText("DROP!");
+
+        // Referee blows whistle on drop
+        if (referee != null)
+        {
+            referee.BlowWhistle();
+        }
 
         yield return new WaitForSeconds(dropDelay);
 
